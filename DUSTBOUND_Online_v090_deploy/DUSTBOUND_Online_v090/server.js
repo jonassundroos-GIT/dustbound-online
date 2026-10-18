@@ -29,7 +29,7 @@ const httpServer = http.createServer((req,res) => {
     const compressed = /\bgzip\b/.test(req.headers['accept-encoding'] || '');
     return answer(res,200,{'content-type':'text/html; charset=utf-8','cache-control':'no-cache','x-content-type-options':'nosniff','content-security-policy':"frame-ancestors 'none'",...(compressed?{'content-encoding':'gzip'}:{})},compressed?gzPage:page);
   }
-  const assets={'/upgrade.css':['upgrade.css','text/css; charset=utf-8'],'/arena.webp':['arena.webp','image/webp'],'/beacon.webp':['beacon.webp','image/webp']};
+  const assets={'/blackwater.css':['blackwater.css','text/css; charset=utf-8'],'/dustbound_blackwater_arena.png':['dustbound_blackwater_arena.png','image/png'],'/upgrade.css':['upgrade.css','text/css; charset=utf-8'],'/arena.webp':['arena.webp','image/webp'],'/beacon.webp':['beacon.webp','image/webp']};
   if(assets[url.pathname]){const [file,mime]=assets[url.pathname];return answer(res,200,{'content-type':mime,'cache-control':'no-cache'},fs.readFileSync(path.join(__dirname,'public',file)));}
   if (url.pathname === '/robots.txt')return answer(res,200,{'content-type':'text/plain'},'User-agent: *\nDisallow: /\n');
   return answer(res,404,{'content-type':'text/plain'},'Not found');

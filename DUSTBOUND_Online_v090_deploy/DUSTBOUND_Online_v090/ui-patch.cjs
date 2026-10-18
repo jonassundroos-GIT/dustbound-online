@@ -35,5 +35,7 @@ module.exports=function upgradePage(source){
  html=html.replace("caravan:'Generate 2 water (6-water cap)'","caravan:'Generate 3 water (6-water cap)'");
  const marker='\nonlineFromInvite();\n})();';
  replace(marker,'\n'+fs.readFileSync(path.join(__dirname,'client','upgrade.js'),'utf8').replaceAll('\r\n','\n')+marker);
+ html=html.replace('</head>','<link rel="stylesheet" href="/blackwater.css">\n</head>');
+ html=html.replace(marker,'\n'+fs.readFileSync(path.join(__dirname,'client','blackwater.js'),'utf8')+marker);
  return Buffer.from(html);
 };

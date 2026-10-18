@@ -1,0 +1,71 @@
+/* Isolated Blackwater layout study. The approved source PNG is unchanged. */
+html,body{height:100%;overflow:hidden;background:#071417}
+#gameScreen{position:relative;min-height:100dvh;height:100dvh;display:none;background:#071417}
+#board-wrap{position:absolute;inset:0;transform:none;width:100%;height:100%;min-height:0;max-width:none;aspect-ratio:auto;margin:0;overflow:hidden;background:#071417;container-type:size}
+#board-wrap:before,.board-rust,.bolt{display:none}
+.world{inset:0;background:url('/dustbound_blackwater_arena.png') center/100% 100% no-repeat;filter:none;opacity:1}
+.board-layout{position:absolute;inset:0;display:block;width:100%;height:100%;min-height:0;padding:0;overflow:visible}
+.top-hud{position:absolute;left:36%;top:13.3%;width:29%;height:4.3%;min-height:0;box-sizing:border-box;padding:0;z-index:30;border:0;box-shadow:none;background:transparent;justify-content:center;gap:8px}
+.top-hud>div:first-child,.player-huds,.connection,#testRestart{display:none!important}
+.turn-label{font:700 clamp(8px,.7vw,13px) system-ui;color:#d3f7f7;background:#07171ed9;border:1px solid #6a9c9d;padding:4px 8px;border-radius:3px;letter-spacing:.06em}
+.hud-right{gap:4px}.hud-right button{font:700 clamp(7px,.55vw,10px) system-ui;padding:4px;background:#07161edb;border:1px solid #89765a}
+.blackwater-test-label{position:absolute;top:1.5%;right:1.2%;z-index:35;background:#071418df;border:1px solid #789d99;color:#d0ece7;padding:5px 9px;border-radius:3px;font:700 clamp(8px,.65vw,12px) system-ui;letter-spacing:.08em;pointer-events:none}
+.top-hand-zone{position:absolute;left:35.9%;top:3.9%;width:28.4%;height:8.1%;padding:0;display:flex;align-items:center;justify-content:center}
+.enemy-hand{width:100%;height:100%;gap:2%;display:flex;justify-content:center;align-items:center}
+.cardback{height:100%;width:18%;max-width:18%;margin:0;border:1px solid #9f8a65;border-radius:4px;transform:none!important;box-shadow:0 3px 8px #0009}
+.enemy-badge{position:absolute;top:-2.4cqh;right:0;padding:0;background:#10191d;color:#dce5db;font-size:.65cqw}
+.camp-row,.camp-row.friend-camps{position:absolute;left:25.5%;top:27.4%;width:49%;height:5.6%;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:3.4%;z-index:6;align-items:stretch}
+.camp-row.friend-camps{left:21.65%;width:56.7%;top:78%;height:5.2%;gap:0}
+.camp-row .camp-plate,.camp-row .camp-plate.friendly{position:relative;display:block;width:100%;height:100%;min-width:0;min-height:0;max-height:none;aspect-ratio:auto;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible;transform:none}
+.camp-plate:before,.camp-plate:after,.camp-art,.camp-art-shade,.base-cost-mark,.camp-health{display:none!important}
+.camp-plate .camp-desc{position:absolute;inset:0;padding:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:.4cqh}
+.camp-desc .camp-title{font:700 .64cqw/1.1 system-ui;max-width:100%;white-space:nowrap;color:#e3eeeb;background:#09171def;border:1px solid #8e795b;border-radius:8px;padding:.35cqh .5cqw;overflow:hidden;text-overflow:ellipsis}
+.camp-plate .camp-hp{height:2.6cqh;min-height:0;width:2cqw;background:#531c17;border:1px solid #b99d69;color:#fff0dc;font:800 .85cqw/2.3cqh system-ui;clip-path:polygon(0 0,100% 0,100% 70%,50% 100%,0 70%);text-align:center}
+.friendly .camp-hp{background:#153d57;position:absolute;top:2.4cqh;width:2.5cqw;height:3.1cqh;line-height:2.6cqh}.camp-plate.destroyed .camp-hp{background:#121c20}.camp-plate.target{outline:2px solid #b4ffff;border-radius:6px;box-shadow:0 0 16px #77e6f5}
+.lane-row{position:absolute;left:24.2%;width:50.4%;height:7.1%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3%;padding:0;align-items:stretch}
+#enemyBack{top:34.2%}#enemyFront{top:41.8%;left:23.4%;width:52%}#myFront{top:55.3%;left:23.4%;width:52%}#myBack{top:63.5%;left:22.7%;width:53.5%}
+.lane{position:relative;height:100%;min-height:0;width:100%;border:0;border-radius:5px;background:transparent!important;box-shadow:none;display:flex;align-items:center;justify-content:center;overflow:visible}
+.lane:before,.lane:after{display:none}.empty-slot{font:700 .5cqw system-ui;letter-spacing:.12em;color:#b5d1cd8c;background:#06181a70;padding:3px 5px}
+.unit-piece{width:55%;height:96%;min-height:0;border-width:1px;border-radius:4px;overflow:visible}.unit-piece img{object-position:50% 12%;border-radius:4px}.unit-piece .unit-name{font-size:.57cqw;min-height:0;padding:2px;line-height:1.1;max-height:none}.unit-info{bottom:-.45cqh;left:-.45cqw;right:-.45cqw}.stat{height:1.7cqh;min-width:1.1cqw;font-size:.75cqw}.unit-drowsy{font-size:.4cqw;padding:2px}.unit-hint{display:none}
+.mid-lane{position:absolute;left:26%;top:49.9%;width:49%;height:3.6%;display:flex;align-items:center;justify-content:center}
+.mid-label{position:static;max-width:none;font:700 .55cqw system-ui;background:#091b20df;border:1px solid #826e50;padding:.35cqh .65cqw;color:#c8e8e3}
+.hand-zone{position:absolute;left:35.7%;top:86.9%;width:29%;height:10.8%;padding:0;display:block;z-index:15}
+.hand-zone:before,.hand-label{display:none}.hand-cards{height:100%;width:100%;padding:0;display:flex;align-items:flex-end;justify-content:center}
+.hand-card{height:100%;min-height:0;max-height:none;border-width:1px;border-radius:4px}.hand-card .hand-name{font-size:.61cqw;left:1.8cqw;top:2px;padding:2px;max-height:2.8cqh}.hand-card .cost{transform:scale(.64);transform-origin:top left}.hand-card .kind{font-size:.43cqw;bottom:2.9cqh;padding:1px}.hand-card .hand-text{height:2.8cqh;bottom:1px;padding:2px 1cqw;font-size:.47cqw!important;line-height:1.15}.hand-card .card-bottom{bottom:.7cqh;left:2px;right:2px}.hand-card .mini-stat{height:1.5cqh;min-width:.9cqw;font-size:.6cqw}
+.hand-card:hover,.hand-card.selected{height:25cqh;transform:translateY(-1cqh) scale(1.05)}.hand-card:hover .hand-name{font-size:.72cqw;max-height:none}.hand-card:hover .kind{font-size:.55cqw;top:3.4cqh}.hand-card:hover .hand-text{font-size:.66cqw!important;min-height:7cqh}.hand-card:hover .cost{transform:scale(.85)}
+.right-top,.right-bottom,.right-bottom .rail-box,.right-bottom .side-specials{display:contents!important}
+.right-top .rail-box,.right-bottom .rail-title,.right-bottom .caps,.right-top .caps,.right-bottom .combat-log,#waterGems,#triangleRules{display:none!important}
+#waterCount{position:absolute;left:91.8%;top:47.5%;width:5.1%;height:2.6%;margin:0;padding:0;background:#07151b;color:#e4faff;border:0;border-radius:5px;text-align:center;font:700 1.25cqw/2.6cqh system-ui;z-index:10;white-space:nowrap}
+#endTurn{position:absolute;left:90.5%;top:54.6%;width:6.25%;height:10.5%;min-height:0;max-height:none;margin:0;padding:0;border:1px solid #86b4b599;border-radius:50%;background:radial-gradient(ellipse,#0c2933,#08202b 70%);color:#ecf9f3;font:1.1cqw/1.2 Georgia,serif;letter-spacing:.04em;text-shadow:0 2px 2px #000;box-shadow:inset 0 0 12px #58d2de33;z-index:15}
+#endTurn:disabled{opacity:.85;color:#a2c1c1}#endTurn.turn-ready{box-shadow:0 0 18px #75fff466}
+#drawCard,#raidBtn,#siloBtn,#cancelSelection,#myDeck{position:absolute;margin:0!important;z-index:16;box-sizing:border-box;min-height:0;padding:3px;border:1px solid #a28a61;background:#081820e8;color:#e0ede7;clip-path:none;border-radius:4px;box-shadow:none;font:700 .55cqw/1.2 system-ui;width:auto;flex:none}
+#drawCard{left:89.8%;top:67.3%;width:3.4%;height:8%;font-size:.53cqw;background:#07171a}#raidBtn{left:93.9%;top:67.3%;width:3.2%;height:8%;background:#07171a}#raidBtn .device-icon{width:1.6cqw;height:2.4cqh;min-height:0;margin:0 auto}#raidBtn .device-label{font-size:.55cqw;margin:2px}#raidBtn>span:last-child{font-size:.4cqw}
+#siloBtn{left:89.8%;top:77.2%;width:7.2%;height:7.1%;background:#081c21e8;border-radius:5px}#siloBtn .device-icon{display:none}#siloBtn .device-label{font-size:.67cqw;margin:0 0 3px}#siloBtn #mySilo{font-size:.61cqw}
+#myDeck{left:89.8%;top:85.2%;width:7.2%;height:auto;font-size:.6cqw;background:#07171dc9;border:0;padding:3px}#cancelSelection{left:89.8%;top:88%;width:7.2%;height:3%;font-size:.55cqw}
+#drawCard:disabled,#raidBtn:disabled,#siloBtn:disabled,#cancelSelection:disabled{opacity:1;filter:none;color:#81958f;background:#08181e}
+.event-timeline{position:absolute;left:1.3%;width:12%;height:14%;padding:5px!important;background:#06171cd9;border:1px solid #657a70;box-shadow:none;margin:0!important;opacity:.9}
+.enemy-timeline{top:35%}.my-timeline{top:56%}.event-timeline:has(.timeline-empty){display:none!important}.timeline-title{font-size:.6cqw}.timeline-title small,.timeline-scale{display:none}.timeline-event{margin:4px 0;padding:4px}.timeline-event-name{font-size:.65cqw}.timeline-result,.timeline-remaining{font-size:.5cqw}.help-bar{display:none}
+/* Fill the available browser viewport; the original 16:9 artwork stays intact. */
+#gameScreen:fullscreen{width:100vw;height:100dvh;background:#071417}
+.top-hud{left:32%;width:39%;top:14%}.turn-label{white-space:nowrap;font-size:clamp(8px,.65vw,13px)}
+.hand-zone{left:16.5%;top:auto;bottom:.3%;width:67%;height:15.2%;padding:0;z-index:20}
+.hand-zone:before{display:block;inset:-8px -16px -12px;background:linear-gradient(transparent,#041216e8 42%);border:0;box-shadow:none;pointer-events:none}
+.hand-cards{align-items:flex-end;justify-content:center}.hand-card{border:2px solid #91b4b4;border-radius:7px;height:100%;overflow:hidden!important}
+.hand-card img{height:60%;object-fit:cover;object-position:50% 9%}
+.hand-card .hand-name{top:4px;left:32px;right:4px;font:700 clamp(11px,.8vw,16px)/1.1 system-ui;max-height:36px;padding:3px;background:#071317e8;white-space:normal;overflow:visible}
+.hand-card .cost{transform:scale(.85);left:3px;top:3px}
+.hand-card .kind{top:auto;bottom:54%;font:800 clamp(8px,.6vw,12px)/1.15 system-ui;left:4px;right:4px;padding:3px 0}
+.hand-card .hand-text{display:block!important;bottom:0;left:0;right:0;height:53%;min-height:0;max-height:none;padding:5px 8px;font:clamp(11px,.7vw,14px)/1.25 system-ui!important;white-space:normal;word-break:normal;overflow-wrap:break-word;overflow:auto!important;border-radius:0;background:#07191ff5;border:0;border-top:1px solid #9b8b6a88;text-align:left}
+.hand-card .card-bottom{bottom:62%;left:4px;right:4px}.hand-card .mini-stat{font:700 12px system-ui;height:20px;min-width:20px}
+.hand-card:hover,.hand-card.selected{height:clamp(230px,28cqh,330px);transform:translateY(-5px) scale(1.04);max-height:none}
+.hand-card:hover .hand-name{font-size:clamp(12px,.8vw,16px);max-height:none}.hand-card:hover .kind{top:auto;bottom:54%;font-size:clamp(9px,.6vw,12px)}
+.hand-card:hover .hand-text{height:53%;min-height:0;max-height:none;padding:7px 9px;font:clamp(12px,.75vw,15px)/1.3 system-ui!important}
+#siloBtn{display:block;overflow:hidden;background:linear-gradient(100deg,#11333d,#07191f);border:1px solid #a58d68;box-shadow:inset 0 0 0 2px #081013,0 3px 12px #0009;padding:0;text-align:center;transition:box-shadow .3s}
+#siloBtn .device-label{position:absolute;left:34%;right:2%;top:8%;font:800 clamp(8px,.65vw,13px) system-ui;color:#c6efed}
+#siloBtn #mySilo{position:absolute;left:34%;right:2%;top:38%;font:700 clamp(8px,.6vw,12px) system-ui}
+#siloBtn .silo-next{position:absolute;left:34%;right:2%;bottom:8%;font:700 clamp(6px,.47vw,10px) system-ui;color:#95d2cd;white-space:nowrap}
+#siloBtn .silo-vessel{position:absolute;display:block;left:7%;top:12%;width:23%;height:77%;border:2px solid #9baca6;border-radius:40% 40% 27% 27%/13% 13% 9% 9%;background:linear-gradient(90deg,#081119,#345159 45%,#101e25);overflow:hidden;box-shadow:inset 3px 0 6px #000b,0 0 6px #080e10}
+.silo-vessel i{position:absolute;display:block;bottom:0;left:0;width:100%;height:var(--silo-fill,0%);background:linear-gradient(90deg,#3cb7c4,#a3fff0 45%,#288fa7);border-top:2px solid #d7fffa;box-shadow:0 0 14px #67f8f2;transition:height .6s ease}
+.silo-vessel>span{position:absolute;inset:12% 0 10%;background:repeating-linear-gradient(0deg,transparent 0 28%,#a0c7c0b0 30% 32%,transparent 34%);border-inline:2px solid #8a9997a0;pointer-events:none}
+#siloBtn.silo-charged{border-color:#8af2e2;box-shadow:inset 0 0 14px #57dbc530,0 0 13px #63ebce70}#siloBtn.silo-charged .silo-next{color:#b9fff2}
+@media(max-height:760px){.hand-zone{height:15.5%}.hand-card .hand-text{font-size:11px!important;padding:4px 6px}.hand-card .hand-name{font-size:11px;line-height:1.05}.hand-card .kind{font-size:8px;padding:2px}.hand-card .cost{transform:scale(.7)}.hand-card .card-bottom{bottom:65%}.hand-card .mini-stat{height:16px;min-width:16px;font-size:10px}}
