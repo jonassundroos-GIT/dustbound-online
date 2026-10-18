@@ -1,57 +1,23 @@
-# Artwork troubleshooting — Blackwater test build
+# Blackwater test: artwork and rules audit
 
-No card image is failing to load. The problem is artwork selection and incomplete integration, rather than broken image URLs.
+All 26 approved people and Scrap Drone keep their assigned illustrations. Each was compared against the approved character package and matched its gameplay ID. Inspection/catalogue and expanded hand cards display the whole portrait. Board portraits now use contain framing to prevent cropped heads.
 
-## Characters: verified against the approved package
+The previous artwork problems were placeholder mappings and tiny base prototypes, not failed image URLs. All 22 events/tactics now have individual pictures: 18 original source panels at native resolution, and four newly illustrated missing scenes (Viscous Flood, Rallying Cry, Battle Frenzy, Corrosive Rain). This includes reserve catalogue cards.
 
-All 26 character illustrations and Scrap Drone match their assigned source files in the approved v2 character ZIP. The encoded game images were compared against every source image; all 27 were closest to the correct gameplay ID, with a maximum mean RGB difference of 0.84/255 on comparison thumbnails (normal WebP compression).
+Acid Rain Rig, Ash Collector and Storm Redirector previously used 116 by 48 pixel prototypes. They now have full-resolution reconstructions of the same designs with separate intact, damaged and destroyed states. These are reconstructions, not recovered original high-resolution masters. Other bases retain their existing native state pictures. Distress Beacon uses its existing full-resolution picture across states, with updated health/state labels.
 
-Field Medic, Dust Stalker, Bone Collector, Chem Thrower and Radio Operator deliberately use alien redesigns in that package. Goo Alchemist uses the approved human female design. These were not silently swapped to older human versions.
+Base art fills the entire box, with title, water cost and health overlaid. The approved Blackwater arena is unchanged (SHA256 a6554db518c87cdad07b28b7cd1a6c5e5eef20a6c72534b6552bbffe531c5c9d).
 
-## Events and tactics: legacy placeholders remain
+Replacement dimensions, hashes and provenance: public/artwork-manifest.json. Exact built-in image-generation prompts: ARTWORK-PROMPTS.md. Full PNG masters: ../artwork-masters/. No battlefield was generated.
 
-All 22 defined events/tactics still reference older assets; 15 of these are in the current 41-card shared deck. The character export explicitly excludes events and tactics. Their source sheets exist in the Visual Library, but the game does not contain a verified per-card mapping to those sheets. No replacement was guessed or generated during this troubleshooting pass.
+History retains complete public actions, including player, card, event/tactic type, water cost, target, resolutions, movement and silo use. Private hands and unrevealed supply cards remain hidden.
 
-| Card | Currently displayed illustration | In shared deck |
-|---|---|---|
-| Scrounge | old Scrounge illustration | Yes |
-| Sandstorm | old Sandstorm illustration | Reserve/catalogue only |
-| Mortar Strike | old turret illustration | Yes |
-| Sabotage | old raider illustration | Reserve/catalogue only |
-| Patch Kit | old Water Runner illustration | Yes |
-| Water Cache | old Scrounge illustration | Yes |
-| Supply Drop | old convoy illustration | Yes |
-| Fallout Front | old Sandstorm illustration | Yes |
-| Dust Ambush | old Dune Raider illustration | Yes |
-| Salvage Caravan | old Convoy Truck illustration | Yes |
-| Repair Convoy | old Field Medic illustration | Yes |
-| Toxic Ashfall | old Sandstorm illustration | Reserve/catalogue only |
-| Crossfire | old Harpoon Gunner illustration | Reserve/catalogue only |
-| Emergency Barricade | old Road Warden illustration | Reserve/catalogue only |
-| Scrap Tempest | old Sandstorm illustration | Reserve/catalogue only |
-| Reinforcement Signal | old Junker Engineer illustration | Yes |
-| Nightfall Strike | old Desert Marksman illustration | Reserve/catalogue only |
-| Recon Sweep | old Radio Operator illustration | Yes |
-| Viscous Flood | old Sandstorm illustration | Yes |
-| Rallying Cry | old Road Warden illustration | Yes |
-| Battle Frenzy | old Dune Raider illustration | Yes |
-| Corrosive Rain | old Sandstorm illustration | Yes |
+Change Lanes moves or swaps for only the selected person's printed water cost. Anchored people cannot move. Readiness/exhaustion is preserved; moving never grants another attack. Fresh Rush moved into Toxic Goo cannot attack.
 
-Source folders: [Events](https://drive.google.com/drive/folders/1_lqfdbeMm7_w9kpqXHYXnx015JpG5DPV), [Tactics](https://drive.google.com/drive/folders/1zasizj5paN3pHefJdRbHVSU9mYILzJ4I). These contain composite source sheets, not an integrated card-to-file manifest. The next artwork step is to identify each approved panel, extract it without changing its artwork, and map it to the correct event/tactic ID.
+Empty Silo returns all stored water immediately, even on the same turn. Make room within the six-water reserve first so the refund loses nothing. Base turn income remains three, with the established four-water first turn for Player 2.
 
-## Base artwork limitations
+All bases start at 10 HP. Exposed-base attacks deal the person's effective attack, including modifiers. Breachworks doubles that next attack. Explicit one-hit tactics/events/base abilities still deal one damage per printed hit. Repairs restore living damaged bases to maximum health and cannot revive destroyed bases.
 
-- Ash Collector, Acid Rain Rig and Storm Redirector still use low-resolution prototypes in all three states.
-- Distress Beacon uses one high-resolution illustration for intact, damaged and destroyed. The game changes the health/state label, but the artwork itself does not change.
-- The other base images exist in all three states, but their source metadata still marks them as candidates needing visual QA. Their thematic assignments have not been certified by this character-only audit.
-- The test board now displays each selected base’s individual artwork, water cost and real 2-health state over the painted platform. Click an own base to read its full power and cost; active powers have a Use ability button, while passive powers are marked automatic.
+Field Medic now prefers a wounded ally in its own column, then itself; the old first-occupied-slot lookup could mask that ally. Radio Operator reveals the scanned card and bottom/keep result in history and a toast. Scrap Hound attacks an enemy person in its own column immediately, then exhausts. Bone Lottery now also respects its Rush. Fresh Rush cannot attack bases or through Toxic Goo, as stated on the card.
 
-## Display and online fixes in this test build
-
-- Removed the layout rule that letterboxed the whole board. It now fills the browser viewport. A 16:9 screen uses the approved composition at 16:9; differently shaped windows adapt without blank bars. FULL SCREEN expands the browser document while keeping inspection overlays available.
-- Widened the hand from 29% to 67% of the window, with larger cards and multi-line text. Hover or select to read longer effects. Hands above five cards overlap.
-- Added a visible water tank to the silo, animated fill level, actual capacity and next-turn gain. Capacity and water income rules are unchanged.
-- Both event HUDs remain visible when empty, with their turn tracks and a No active events state. Pending events and raids populate the same persistent panels.
-- The earlier 127.0.0.1 link was a local preview address. A separate GitHub branch and public Render test service provide a shareable address. The stable live service remains on main.
-
-The existing version remains v0.10.0. No card balance or gameplay rules were changed.
+The release remains v0.10.0 on blackwater-test. Stable main is unchanged. Online rooms are held in memory and reset when the service restarts.

@@ -20,6 +20,7 @@ const roomCode = () => crypto.randomBytes(9).toString('base64url');
 const playerToken = () => crypto.randomBytes(24).toString('base64url');
 const page = require('./ui-patch.cjs')(fs.readFileSync(path.join(__dirname, 'public', 'index.html')));
 const gzPage = zlib.gzipSync(page, {level: 6});
+const artFiles=new Map(Object.values(require('./public/artwork-manifest.json')).map(a=>[a.url,a.url.slice(1)]));
 function answer(res, status, headers, data) {res.writeHead(status, headers);res.end(data);}
 const httpServer = http.createServer((req,res) => {
   const url = new URL(req.url || '/', 'http://localhost');
@@ -31,6 +32,7 @@ const httpServer = http.createServer((req,res) => {
   }
   const assets={'/blackwater.css':['blackwater.css','text/css; charset=utf-8'],'/dustbound_blackwater_arena.png':['dustbound_blackwater_arena.png','image/png'],'/upgrade.css':['upgrade.css','text/css; charset=utf-8'],'/arena.webp':['arena.webp','image/webp'],'/beacon.webp':['beacon.webp','image/webp']};
   if(assets[url.pathname]){const [file,mime]=assets[url.pathname];return answer(res,200,{'content-type':mime,'cache-control':'no-cache'},fs.readFileSync(path.join(__dirname,'public',file)));}
+  if(artFiles.has(url.pathname))return answer(res,200,{'content-type':'image/webp','cache-control':'no-cache'},fs.readFileSync(path.join(__dirname,'public',artFiles.get(url.pathname))));
   if (url.pathname === '/robots.txt')return answer(res,200,{'content-type':'text/plain'},'User-agent: *\nDisallow: /\n');
   return answer(res,404,{'content-type':'text/plain'},'Not found');
 });

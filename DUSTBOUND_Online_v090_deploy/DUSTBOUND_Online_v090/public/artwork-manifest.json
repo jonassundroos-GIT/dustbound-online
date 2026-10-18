@@ -1,0 +1,240 @@
+{
+  "card_repaircrew": {
+    "url": "/art/card_repaircrew.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 0, panel 1; native crop",
+    "sha256": "6ed21cd044ffb31698301e3a7300db315dc5b26260d0fb2075b77ac232e9a8f0"
+  },
+  "card_crossfire": {
+    "url": "/art/card_crossfire.webp",
+    "width": 638,
+    "height": 740,
+    "source": "Original artwork sheet 0, panel 2; native crop",
+    "sha256": "f33f4604a31f6fa06bda837f0cb4449bbef53905c05b5bb49da2fc98d6c7bc25"
+  },
+  "card_barricade": {
+    "url": "/art/card_barricade.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 0, panel 3; native crop",
+    "sha256": "e928b30813e8c20f7f2b914f2afa248fa700d2bfc50e1a1d5e4182431088ca54"
+  },
+  "card_ashfall": {
+    "url": "/art/card_ashfall.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 1, panel 1; native crop",
+    "sha256": "902c0a7f6d80cd4f57ef771e6f57709d3327cc303440bd2a213cd45d56374688"
+  },
+  "card_supply": {
+    "url": "/art/card_supply.webp",
+    "width": 638,
+    "height": 740,
+    "source": "Original artwork sheet 1, panel 2; native crop",
+    "sha256": "171f756b69c86fe499a2ccd8a1f606b106832a7cdd01e46665b7e71447839d96"
+  },
+  "card_blackout": {
+    "url": "/art/card_blackout.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 1, panel 3; native crop",
+    "sha256": "1f75c53de01057ff1d42b4e7cddefcd49d0db9c652c805b5134412a9af5807bf"
+  },
+  "card_tempest": {
+    "url": "/art/card_tempest.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 2, panel 1; native crop",
+    "sha256": "6f3eb97802c45fbcde390922822b26cc9a0810111858a5f677cb6f41d0b115ee"
+  },
+  "card_reinforcements": {
+    "url": "/art/card_reinforcements.webp",
+    "width": 638,
+    "height": 740,
+    "source": "Original artwork sheet 2, panel 2; native crop",
+    "sha256": "5f1afd45784864f40c0f8024dca7ef115dd14040fbd2cf77afc2fecefdfd30aa"
+  },
+  "card_recon": {
+    "url": "/art/card_recon.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 2, panel 3; native crop",
+    "sha256": "be43a13eaaaab04c49ff9a0f9d0115c2389aec504a92a146b1d1c353fa37662e"
+  },
+  "card_fallout": {
+    "url": "/art/card_fallout.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 3, panel 1; native crop",
+    "sha256": "ade6d8e1b11db467df3940cba0b9b08048090cecd67356103d72586d92a0878a"
+  },
+  "card_ambush": {
+    "url": "/art/card_ambush.webp",
+    "width": 638,
+    "height": 740,
+    "source": "Original artwork sheet 3, panel 2; native crop",
+    "sha256": "d589a8282460fd3336fdcf7b0dddb90498359c7f4a240706b6c38c580105f1aa"
+  },
+  "card_caravan": {
+    "url": "/art/card_caravan.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 3, panel 3; native crop",
+    "sha256": "601ec18221bd587fea71e402757d98a1d8f26640c504d1fc3ceb12a449f3b5d1"
+  },
+  "card_sabotage": {
+    "url": "/art/card_sabotage.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 9, panel 1; native crop",
+    "sha256": "94347603a805f6f34352063327cbe032d4b0c650e52f0cf1edf5956a2f2377cf"
+  },
+  "card_patch": {
+    "url": "/art/card_patch.webp",
+    "width": 638,
+    "height": 740,
+    "source": "Original artwork sheet 9, panel 2; native crop",
+    "sha256": "edb8a1bed0e472da5f0150807cd2ef1f12e17bdfef80f581c76e12ff304a619e"
+  },
+  "card_cache": {
+    "url": "/art/card_cache.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 9, panel 3; native crop",
+    "sha256": "849fbb16d3fba49b98bd9716c37d24e029d4c90d0674feed7fff2dae87b5376d"
+  },
+  "card_scrounge": {
+    "url": "/art/card_scrounge.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 10, panel 1; native crop",
+    "sha256": "45bfa198bce564ae2540acab986c50a28c2911be20d9c38506013000e1d1eee1"
+  },
+  "card_storm": {
+    "url": "/art/card_storm.webp",
+    "width": 638,
+    "height": 740,
+    "source": "Original artwork sheet 10, panel 2; native crop",
+    "sha256": "a88bb9df5e30b9c3b785afb045966e1ad9ec604d16a67e9ae665fb102052ceef"
+  },
+  "card_strike": {
+    "url": "/art/card_strike.webp",
+    "width": 637,
+    "height": 740,
+    "source": "Original artwork sheet 10, panel 3; native crop",
+    "sha256": "7db62fb531d1e6da9aa92bede522c43c13825820b2251be9a3fd36c5d4eaae8d"
+  },
+  "base_acid_intact": {
+    "url": "/art/base_acid_intact.webp",
+    "width": 1536,
+    "height": 1024,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "ba8033a8a94acc9c0db539f4a15974e1df4d6d718177bf4ccfffe5034ddaa344"
+  },
+  "base_acid": {
+    "url": "/art/base_acid_intact.webp",
+    "width": 1536,
+    "height": 1024,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "ba8033a8a94acc9c0db539f4a15974e1df4d6d718177bf4ccfffe5034ddaa344"
+  },
+  "base_ash_intact": {
+    "url": "/art/base_ash_intact.webp",
+    "width": 1672,
+    "height": 941,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "6bcfcac7ae42e6630ff733fc08b903cb5c53a17f455f885cac750eadfb2f73a2"
+  },
+  "base_ash": {
+    "url": "/art/base_ash_intact.webp",
+    "width": 1672,
+    "height": 941,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "6bcfcac7ae42e6630ff733fc08b903cb5c53a17f455f885cac750eadfb2f73a2"
+  },
+  "base_redirect_intact": {
+    "url": "/art/base_redirect_intact.webp",
+    "width": 1672,
+    "height": 941,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "8977d5258cea4c10386acfbffb7a4282be8c7966d863205edd2da52830cde906"
+  },
+  "base_redirect": {
+    "url": "/art/base_redirect_intact.webp",
+    "width": 1672,
+    "height": 941,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "8977d5258cea4c10386acfbffb7a4282be8c7966d863205edd2da52830cde906"
+  },
+  "base_acid_damaged": {
+    "url": "/art/base_acid_damaged.webp",
+    "width": 1536,
+    "height": 1024,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "cdcfbc8d2a795f5d0c2bbc123ed07f982167f06f64864f1f340aa317163570db"
+  },
+  "base_acid_destroyed": {
+    "url": "/art/base_acid_destroyed.webp",
+    "width": 1536,
+    "height": 1024,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "6e43a820b377ee9d449bb2ebfd2da96aa2a77b0ab858324f0a2eadc3b6e8ad10"
+  },
+  "base_ash_damaged": {
+    "url": "/art/base_ash_damaged.webp",
+    "width": 1672,
+    "height": 941,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "895483e9e6138c9a7ba481ca29d1cdd096b5c28b8656568632994ff4cda334b2"
+  },
+  "base_ash_destroyed": {
+    "url": "/art/base_ash_destroyed.webp",
+    "width": 1672,
+    "height": 941,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "f57a0297e095beaeb73a92ecd238c5fa203ddbdd76fc419708b363ff7d69c445"
+  },
+  "base_redirect_damaged": {
+    "url": "/art/base_redirect_damaged.webp",
+    "width": 1672,
+    "height": 941,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "2bc529c351644a744a2e6bd647033a4d71f6f743b1851815b423386720912814"
+  },
+  "base_redirect_destroyed": {
+    "url": "/art/base_redirect_destroyed.webp",
+    "width": 1672,
+    "height": 941,
+    "source": "Full-resolution reconstruction of original base design; built-in image generation",
+    "sha256": "73e0dd18d3a5f28206345a2ebd2a7c0795a83d95aa5140b967faf8f0cefbb650"
+  },
+  "card_viscous": {
+    "url": "/art/card_viscous.webp",
+    "width": 1024,
+    "height": 1536,
+    "source": "Built-in image generation; prompt in ARTWORK-PROMPTS.md",
+    "sha256": "31973a6e6170d643c836ed4a70e76818450fd0274f6c552acbbe9eb9bfa64ae4"
+  },
+  "card_rally": {
+    "url": "/art/card_rally.webp",
+    "width": 1024,
+    "height": 1536,
+    "source": "Built-in image generation; prompt in ARTWORK-PROMPTS.md",
+    "sha256": "ae0fe08dd20e4b8b2729e68457e5e331bcbba38d7d4d18548318b99e4bd64c37"
+  },
+  "card_frenzy": {
+    "url": "/art/card_frenzy.webp",
+    "width": 1024,
+    "height": 1536,
+    "source": "Built-in image generation; prompt in ARTWORK-PROMPTS.md",
+    "sha256": "22de4ce44097c2abf1a0e98315a7383da2f0901c3bf76721354bfa3a41f7600b"
+  },
+  "card_corrosive": {
+    "url": "/art/card_corrosive.webp",
+    "width": 1024,
+    "height": 1536,
+    "source": "Built-in image generation; prompt in ARTWORK-PROMPTS.md",
+    "sha256": "196504ea39c365cb664d3342e4902528d9b260a119b595804436dde33380ef7c"
+  }
+}

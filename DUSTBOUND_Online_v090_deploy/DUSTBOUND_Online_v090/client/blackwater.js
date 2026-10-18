@@ -1,4 +1,4 @@
-/* Presentation only: retain game state, rules and the existing version. */
+/* Blackwater test controls; authoritative actions remain in rules.cjs. */
 const blackwaterBoard=$('board-wrap');
 blackwaterBoard.appendChild(document.querySelector('.top-hud'));
 const blackwaterLabel=document.createElement('div');
@@ -28,9 +28,9 @@ activateBase=function(index){inspectBase('me',index);};
 inspectBase=function(owner,index){
  const v=projected();if(!v)return;
  const p=owner==='me'?own(v):foe(v),c=p.camps[index],b=RULES.baseMap[c?.baseId];if(!b)return;
- inspectDefinition(b,'base_'+b.id+(c.hp<=0?'_destroyed':c.hp===1?'_damaged':'_intact'),'BASE · '+b.category.toUpperCase());
+ inspectDefinition(b,'base_'+b.id+(c.hp<=0?'_destroyed':c.hp<c.maxHp?'_damaged':'_intact'),'BASE · '+b.category.toUpperCase());
  const once=b.wild||b.id==='weld';
- const state=c.hp<=0?'DESTROYED':c.hp===1?'DAMAGED · 1/2 HEALTH':'INTACT · 2/2 HEALTH';
+ const state=(c.hp<=0?'DESTROYED':c.hp<c.maxHp?'DAMAGED':'INTACT')+' · '+c.hp+'/'+c.maxHp+' HEALTH';
  const timing=b.target==='passive'?'PASSIVE · AUTOMATIC':once?'ONCE PER MATCH':'ONCE PER TURN';
  $('inspectDesc').textContent=b.text+'\n\n'+b.cost+' WATER · '+timing+'\n'+state;
  if(owner!=='me')return;
@@ -44,6 +44,65 @@ inspectBase=function(owner,index){
   else if(selected?.kind==='base')toast(b.target==='move'?'Choose a friendly person to move.':'Choose a highlighted target for '+b.name+'.');
  });
  $('inspectDesc').append(use);
+};
+
+const historyPanel=document.createElement('section');
+historyPanel.id='matchHistory';historyPanel.hidden=true;historyPanel.setAttribute('role','dialog');historyPanel.setAttribute('aria-label','Match history');
+historyPanel.innerHTML='<div class="history-heading"><strong>MATCH HISTORY</strong><button id="closeHistory" type="button">CLOSE</button></div><p>Newest actions first · public plays and ability results</p><ol id="historyEntries"></ol>';
+document.body.append(historyPanel);
+const historyButton=document.createElement('button');historyButton.id='historyButton';historyButton.textContent='HISTORY';historyButton.setAttribute('aria-expanded','false');
+document.querySelector('.hud-right').prepend(historyButton);
+function closeHistory(){historyPanel.hidden=true;historyButton.setAttribute('aria-expanded','false');historyButton.focus();}
+historyButton.addEventListener('click',()=>{historyPanel.hidden=!historyPanel.hidden;historyButton.setAttribute('aria-expanded',String(!historyPanel.hidden));if(!historyPanel.hidden)$('closeHistory').focus();});
+$('closeHistory').addEventListener('click',closeHistory);
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!historyPanel.hidden)closeHistory();});
+const moveButton=document.createElement('button');moveButton.id='movePerson';moveButton.textContent='CHANGE LANES';blackwaterBoard.append(moveButton);
+moveButton.addEventListener('click',()=>{if(!getMyTurn())return;selected={kind:'reposition-from'};render();});
+const emptyButton=document.createElement('button');emptyButton.id='emptySilo';emptyButton.type='button';blackwaterBoard.append(emptyButton);
+emptyButton.addEventListener('click',()=>dispatch({type:'emptySilo'}));
+const laneTargetsBeforeMove=isLaneTarget,selectLaneBeforeMove=selectLane;
+function movable(p,index){const u=p.units[index];return !!u&&defs[u.id]?.trait!=='anchored'&&p.water>=defs[u.id].cost;}
+isLaneTarget=function(owner,index,part='slot'){
+ if(selected?.kind==='reposition-from'||selected?.kind==='reposition-to'){
+  if(owner!=='me'||part==='camp'||!getMyTurn()||index<0||index>=6)return false;
+  const p=own(projected());
+  return selected.kind==='reposition-from'?movable(p,index):index!==selected.from&&movable(p,selected.from)&&defs[p.units[index]?.id]?.trait!=='anchored';
+ }
+ return laneTargetsBeforeMove(owner,index,part);
+};
+selectLane=function(owner,index,part='slot'){
+ if(selected?.kind==='reposition-from'||selected?.kind==='reposition-to'){
+  if(!isLaneTarget(owner,index,part)){selected=null;render();return;}
+  if(selected.kind==='reposition-from'){selected={kind:'reposition-to',from:index};render();}
+  else dispatch({type:'reposition',from:selected.from,to:index});
+  return;
+ }
+ return selectLaneBeforeMove(owner,index,part);
+};
+let historyRevision='',radioRevision='';
+const renderWithBlackwaterActions=render;
+render=function(){
+ renderWithBlackwaterActions();const v=projected();if(!v)return;const p=own(v);
+ emptyButton.textContent='EMPTY SILO · +'+p.silo+' WATER';
+ emptyButton.disabled=!getMyTurn()||!p.silo||p.water+p.silo>6;
+ emptyButton.title=p.water+p.silo>6?'Spend water first so the entire silo fits within the 6-water reserve.':'Return all stored water to your reserves immediately.';
+ moveButton.disabled=!getMyTurn()||!p.units.some((u,i)=>movable(p,i));
+ if(selected?.kind==='reposition-from')$('midLabel').textContent='CHANGE LANES · choose a person · pay its printed water cost';
+ if(selected?.kind==='reposition-to'){
+  const u=p.units[selected.from];$('midLabel').textContent=u?'MOVE '+u.name+' · '+defs[u.id].cost+' WATER · choose any friendly slot to move or swap':'Choose a person';
+ }
+ document.querySelectorAll('.unit-piece').forEach(el=>{
+  const lane=el.closest('[data-owner][data-lane]');if(!lane)return;
+  const u=(lane.dataset.owner==='me'?p:foe(v)).units[Number(lane.dataset.lane)];
+  if(u?.freshRush&&u.ready){const badge=document.createElement('span');badge.className='rush-ready';badge.textContent='RUSH READY';el.append(badge);}
+ });
+ const key=role+':'+me+':'+v.revision;
+ if(key!==historyRevision){
+  historyRevision=key;const list=$('historyEntries'),scroll=list.scrollTop;list.replaceChildren();
+  for(const entry of v.log){const li=document.createElement('li');li.textContent=entry;list.append(li);}list.scrollTop=scroll;
+ }
+ const radioKey=role+':'+me+':'+v.turn+':'+JSON.stringify(v.reveals);
+ if(radioKey!==radioRevision){radioRevision=radioKey;for(const r of v.reveals||[])toast('Player '+r.actor+' · Radio Operator: '+r.name+' ('+r.cost+' water) · '+(r.movedToBottom?'sent to bottom of supply':'kept for normal draw')+'. See History.');}
 };
 fitHand=function(){
  const holder=$('myHand'),cards=[...holder.querySelectorAll('[data-card]')];if(!cards.length)return;
@@ -62,8 +121,8 @@ render=function(){
   const p=el.dataset.owner==='me'?own(v):foe(v),c=p.camps[Number(el.dataset.lane)];
   if(c){
    const b=RULES.baseMap[c.baseId];
-   el.querySelector('.camp-hp').textContent=c.hp+'/2 · '+(c.hp<=0?'DESTROYED':c.used?'USED':c.hp===1?'DAMAGED':'INTACT');
-   el.querySelector('.camp-art').alt=b.name+' — '+(c.hp<=0?'destroyed':c.hp===1?'damaged':'intact');
+   el.querySelector('.camp-hp').textContent=c.hp+'/'+c.maxHp+' HP · '+(c.hp<=0?'DESTROYED':c.used?'USED':c.hp<c.maxHp?'DAMAGED':'INTACT');
+   el.querySelector('.camp-art').alt=b.name+' — '+(c.hp<=0?'destroyed':c.hp<c.maxHp?'damaged':'intact');
    el.querySelector('.base-cost-mark').setAttribute('aria-label',b.cost+' water');
    const cost=document.createElement('span');cost.className='base-water-label';cost.textContent=b.cost+' WATER'+(b.target==='passive'?' · PASSIVE':'');
    el.querySelector('.camp-title').after(cost);

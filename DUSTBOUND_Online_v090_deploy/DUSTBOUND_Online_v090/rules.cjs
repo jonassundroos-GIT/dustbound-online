@@ -8,7 +8,7 @@ const RULES = (() => {
  ['railgun','Railgun Tower','Aggression','enemyUnit',2,'Deal 2 damage to any enemy person, including a protected back-row person. Cannot target bases.'],
  ['mortar','Mortar Battery','Aggression','enemy',2,'Deal 2 damage to frontmost enemy person, or 1 hit to an exposed base.'],
  ['warDrums','War Drums','Aggression','friendlyUnit',1,'A friendly person gains +1 attack until end of turn.'],
- ['breach','Breachworks','Aggression','none',3,'Your next successful base attack this turn inflicts a second base hit.'],
+ ['breach','Breachworks','Aggression','none',3,'Your next successful attack on an exposed base this turn deals double attack damage.'],
  ['hospital','Field Hospital','Defense','friendlyUnit',2,'Restore 2 HP to a friendly person.'],
  ['barrier','Barrier Station','Defense','friendlyUnit',1,'Prevent the next instance of damage to a friendly person this turn.'],
  ['weld','Emergency Weld','Defense','friendlyBase',3,'Once per match: repair a damaged friendly base.'],
@@ -43,7 +43,7 @@ const RULES = (() => {
  convoy:{name:'Convoy Truck',kind:'unit',cost:3,atk:2,hp:5,art:'convoy08',text:'Heavy defender. Holds the line.'},
  marauder:{name:'Iron Marauder',kind:'unit',cost:4,atk:4,hp:4,art:'marauder08',text:'Heavy close-combat fighter.'},
  turret:{name:'Siege Crawler',kind:'unit',cost:4,atk:3,hp:6,art:'crawler08',text:'Siege unit. Cannot be moved.',trait:'anchored'},
- medic:{name:'Field Medic',kind:'unit',cost:2,atk:1,hp:3,art:'medic08',text:'At start of your turn, repair 1 HP on a friendly person in this column.',trait:'medic'},
+ medic:{name:'Field Medic',kind:'unit',cost:2,atk:1,hp:3,art:'medic08',text:'At start of your turn, restore 1 HP to a damaged friendly person in this column, preferring the other person.',trait:'medic'},
  saboteur:{name:'Saboteur',kind:'unit',cost:3,atk:2,hp:3,art:'saboteur08',text:'When damaging an enemy base, opponent discards a random card.',trait:'saboteur'},
  stalker:{name:"Dust Stalker",kind:'unit',cost:1,atk:1,hp:1,art:'stalker081',text:"Front row: this person has +1 attack.",trait:'frontPower'},
  engineer:{name:"Junker Engineer",kind:'unit',cost:2,atk:2,hp:2,art:'engineer081',text:"Deploy: create a 1/1 Scrap Drone in another empty slot.",trait:'engineer'},
@@ -54,7 +54,7 @@ const RULES = (() => {
  harpoon:{name:"Harpoon Gunner",kind:'unit',cost:4,atk:4,hp:2,art:'harpoon081',text:"Attacks ignore shields and decoy redirection.",trait:'harpoon'},
  chem:{name:"Chem Thrower",kind:'unit',cost:4,atk:3,hp:3,art:'chem081',text:"Deploy: deal 2 damage to the enemy front-row person in this column.",trait:'chem'},
  golem:{name:"Scrap Golem",kind:'unit',cost:5,atk:5,hp:5,art:'golem081',text:"Anchored. When destroyed: deal 2 damage to all enemy people.",trait:'anchored'},
- radio:{name:"Radio Operator",kind:'unit',cost:2,atk:1,hp:4,art:'radio081',text:"At turn start: reveal top card; if cost 4+, put it on bottom.",trait:'radio'},
+ radio:{name:"Radio Operator",kind:'unit',cost:2,atk:1,hp:4,art:'radio081',text:"At start of your turn, reveal the top supply card. If it costs 4 or more, put it on the bottom before your normal draw.",trait:'radio'},
  scrounge:{name:'Scrounge',kind:'tactic',cost:2,art:'scrounge',text:'Draw 2 cards.',effect:'draw2'},
  storm:{name:'Sandstorm',kind:'tactic',cost:4,art:'sandstorm',text:'Deal 2 damage to all enemy front-row people.',effect:'storm'},
  strike:{name:'Mortar Strike',kind:'tactic',cost:3,art:'turret',text:'Deal 3 to frontmost defender or 1 hit to exposed base.',effect:'strike',target:'enemy'},
@@ -92,7 +92,7 @@ const RULES = (() => {
  let uidCount=1;
  function uid(){return 'c'+uidCount++;} function card(id){return {id,uid:uid()};}
  function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
- function note(g,msg){g.log.unshift('T'+g.turn+' · '+msg);g.log=g.log.slice(0,45);}
+ function note(g,msg){g.log.unshift('T'+g.turn+' · '+msg);}
  function draftOffers(){const remaining=baseDefs.slice(),offers=[[],[]];for(let player=0;player<2;player++){
    for(const category of ['Economy','Aggression','Defense','Intelligence','Engineering','Wasteland','Wildcard']){
      const possible=remaining.filter(b=>b.category===category);const chosen=possible[Math.floor(Math.random()*possible.length)];offers[player].push(chosen.id);remaining.splice(remaining.indexOf(chosen),1);
@@ -108,7 +108,7 @@ const RULES = (() => {
    g.version=814;g.testMode=true;
    for(const p of g.players){
      p.offer=ids.slice();p.selected=ids.slice();p.drafted=true;
-     p.camps=ids.map((id,i)=>({id:i,baseId:id,name:baseMap[id].name,power:id,hp:2,maxHp:2,used:false,wildUsed:false}));
+     p.camps=ids.map((id,i)=>({id:i,baseId:id,name:baseMap[id].name,power:id,hp:10,maxHp:10,used:false,wildUsed:false}));
    }
    g.phase='battle';g.active=1;
    note(g,'QUICK TEST: mirrored bases, one freshly shuffled shared 41-card pile, random hands.');
@@ -126,7 +126,7 @@ const RULES = (() => {
  }
  function gain(g,p,amount){const n=Math.max(0,Math.min(amount,6-p.water));p.water+=n;p.bonusGenerated+=n;if(n)note(g,'Player '+p.id+' generates '+n+' water.');return n;}
  function isAlive(p,i){return !!p.camps[i]&&p.camps[i].hp>0;}
- function hitBase(g,p,col,n=1){const c=p.camps[col];if(!c||c.hp<=0)return 0;let k=0;for(let i=0;i<n&&c.hp>0;i++){c.hp--;k++;note(g,c.name+' '+(c.hp?'is damaged.':'is DESTROYED.'));}return k;}
+ function hitBase(g,p,col,n=1){const c=p.camps[col];if(!c||c.hp<=0||n<=0)return 0;const damage=Math.min(c.hp,n);c.hp-=damage;note(g,'Player '+p.id+' '+c.name+' takes '+damage+' damage ('+c.hp+'/'+c.maxHp+' HP)'+(c.hp===0?' — DESTROYED.':'.'));return damage;}
  function kill(g,p,slot){const u=p.units[slot];if(u&&u.hp<=0){if(defs[u.id]&&u.id!=='drone')p.discard.push({id:u.id,uid:u.uid});p.units[slot]=null;note(g,u.name+' is destroyed.');
   if(u.id==='collector'){draw(g,p);draw(g,p);note(g,'Bone Collector: draw 2.');}
   if(u.id==='golem'){const enemy=g.players.find(x=>x.id!==p.id);for(let i=0;i<6;i++)if(enemy.units[i])damageUnit(g,enemy,i,2);note(g,'Scrap Golem detonates across enemy formation.');}
@@ -179,6 +179,13 @@ const RULES = (() => {
  if(a.type==='end')return null;
  if(a.type==='draw')return p.water<2?'Drawing costs 2 water.':!g.sharedDeck.length&&!g.players.some(x=>x.discard.length)?'The shared draw pile is empty.':null;
  if(a.type==='silo')return p.silo>=(p.camps.some(c=>c.hp>0&&c.baseId==='reservoir')?2:1)?'Water Silo full.':p.water<1?'Need 1 water.':null;
+ if(a.type==='emptySilo')return !p.silo?'The silo is empty.':p.water+p.silo>6?'Spend water first so all stored water fits within the 6-water limit.':null;
+ if(a.type==='reposition'){
+  if(!validLane(a.from,6)||!validLane(a.to,6)||a.from===a.to)return 'Choose two different friendly slots.';
+  const moving=p.units[a.from],other=p.units[a.to];if(!moving)return 'Choose a friendly person to move.';
+  if(defs[moving.id]?.trait==='anchored'||other&&defs[other.id]?.trait==='anchored')return 'Anchored people cannot move or swap.';
+  return p.water<(defs[moving.id]?.cost||0)?'Moving '+moving.name+' costs '+defs[moving.id].cost+' water.':null;
+ }
  if(a.type==='raid')return p.water<2?'Raid costs 2 water.':p.raids.length?null:!validLane(a.lane,3)?'Choose a column.':!hasTarget(en,a.lane)?'No target in column.':null;
  if(a.type==='attack'){
   if(!validLane(a.from,6)||!validLane(a.to,3))return 'Invalid slot.';const u=p.units[a.from];if(!u||!u.ready)return 'Person is not ready.';
@@ -192,7 +199,7 @@ const RULES = (() => {
   if(d.kind==='event'&&d.target&&!validLane(a.lane,d.target.endsWith('Row')?2:3))return d.target.endsWith('Row')?'Choose front (1) or back (0) row for the event.':'Choose a column for the event.';
   if(d.kind==='unit'&&(!validLane(a.lane,6)||p.units[a.lane]))return 'Choose an empty person slot.';
   if(d.kind!=='event'&&d.target==='enemy'&&(!validLane(a.lane,3)||!hasTarget(en,a.lane)))return 'Choose an enemy column with a target.';
-  if(d.kind!=='event'&&d.target==='friendly'&&(!validLane(a.lane,3)||(!isAlive(p,a.lane)&&![p.units[a.lane],p.units[a.lane+3]].some(u=>u&&u.hp<u.maxHp))))return 'Choose a damaged person or base.';
+  if(d.kind!=='event'&&d.target==='friendly'&&(!validLane(a.lane,3)||(!(p.camps[a.lane]?.hp>0&&p.camps[a.lane].hp<p.camps[a.lane].maxHp)&&![p.units[a.lane],p.units[a.lane+3]].some(u=>u&&u.hp<u.maxHp))))return 'Choose a damaged person or base.';
   return null;
  }
  if(a.type==='base'){
@@ -213,7 +220,7 @@ const RULES = (() => {
   if(b.target==='enemyUnit'&&b.id!=='railgun'&&(!validLane(a.lane,3)||frontmost(en,a.lane)===-1))return 'Choose an enemy column with a person.';
   if(b.target==='friendly'&&(!validLane(a.lane,3)||!needPerson(p,a.lane)))return 'Choose a friendly column with a person.';
   if(b.target==='friendlyUnit'&&(!validLane(a.lane,6)||!p.units[a.lane]))return 'Choose a friendly person.';
-  if(b.target==='friendlyBase'&&(!validLane(a.lane,3)||p.camps[a.lane].hp!==1))return 'Choose a damaged (not destroyed) friendly base.';
+  if(b.target==='friendlyBase'&&(!validLane(a.lane,3)||p.camps[a.lane].hp<=0||p.camps[a.lane].hp>=p.camps[a.lane].maxHp))return 'Choose a damaged (not destroyed) friendly base.';
   if(b.target==='empty'&&(!validLane(a.lane,6)||p.units[a.lane]))return 'Choose an empty slot.';
   if(b.target==='sacrifice'&&(!validLane(a.lane,6)||!p.units[a.lane]))return 'Select an occupied friendly person slot to sacrifice.';
   if(b.target==='move'&&(!validLane(a.from,6)||!validLane(a.lane,6)||!p.units[a.from]||p.units[a.lane]||defs[p.units[a.from].id]?.trait==='anchored'))return 'Move a movable person to an empty slot.';
@@ -244,7 +251,20 @@ const RULES = (() => {
  function startTurn(g,actor){const p=own(g,actor);g.active=actor;g.turn++;p.turnsStarted++;const stored=p.silo;p.water=Math.min(6,(actor===2 && p.turnsStarted===1 ? 4 : 3)+stored);p.silo=0;p.bonusGenerated=0;p.siloGained=stored;for(const u of p.units)if(u?.id==='runner')gain(g,p,1);p.ashUsed=false;p.revealHand=false;p.breach=false;
   // Advance raids only on their owner's turn start. The newly launched raid does not tick until their NEXT turn.
   for(const raid of p.raids.slice())advanceRaid(g,p,raid,'turn start');
-  p.camps.forEach(c=>c.used=false);if(p.units.some(u=>u?.id==='radio')&&g.sharedDeck.length){const top=g.sharedDeck[g.sharedDeck.length-1];note(g,'Radio Operator scans: '+defs[top.id].name+'.');if(defs[top.id].cost>=4){g.sharedDeck.unshift(g.sharedDeck.pop());note(g,'Radio Operator sends an expensive card to the bottom.');}}p.units.forEach((u,i)=>{if(u){u.ready=true;u.freshRush=false;u.tempAtk=0;u.shield=0;u.decoy=0;u.conductorUsed=false;if(u.id==='medic'){const other=p.units[i%3]||p.units[i%3+3];if(other&&other.hp<other.maxHp)other.hp++;}}});
+  p.camps.forEach(c=>c.used=false);g.reveals=[];
+  if(p.units.some(u=>u?.id==='radio')&&g.sharedDeck.length){
+   const top=g.sharedDeck[g.sharedDeck.length-1],d=defs[top.id],bottom=d.cost>=4;
+   g.reveals.push({actor,cardId:top.id,name:d.name,cost:d.cost,movedToBottom:bottom});
+   note(g,'Player '+actor+' Radio Operator reveals '+d.name+' ('+d.cost+' water)'+(bottom?' and puts it on the bottom.':' — kept on top for the normal draw.'));
+   if(bottom)g.sharedDeck.unshift(g.sharedDeck.pop());
+  }
+  p.units.forEach((u,i)=>{if(u){u.ready=true;u.freshRush=false;u.tempAtk=0;u.shield=0;u.decoy=0;u.conductorUsed=false;
+   if(u.id==='medic'){
+    const opposite=i<3?i+3:i-3;
+    const target=[p.units[opposite],u].find(person=>person&&person.hp<person.maxHp);
+    if(target){target.hp++;note(g,'Player '+actor+' Field Medic restores 1 HP to '+target.name+' ('+target.hp+'/'+target.maxHp+' HP).');}
+   }
+  }});
   const ready=[];p.events=p.events.filter(e=>{e.remaining--;if(e.remaining<=0){ready.push(e);return false;}return true;});
   for(const e of ready){const en=foe(g,actor);
    if(e.id==='supply'){draw(g,p);draw(g,p);}
@@ -253,7 +273,7 @@ const RULES = (() => {
    else if(e.id==='doomsday'){for(const slot of [e.lane,e.lane+3]){if(en.units[slot]){en.units[slot].hp=0;kill(g,en,slot);}if(p.units[slot]){p.units[slot].hp=0;kill(g,p,slot);}}if(frontmost(en,e.lane)<0)hitBase(g,en,e.lane);if(frontmost(p,e.lane)<0)hitBase(g,p,e.lane);}
    else if(e.id==='ambush')deal(g,en,e.lane,2);
    else if(e.id==='caravan')gain(g,p,3);
-   else if(e.id==='repaircrew'){if(p.camps[e.lane]?.hp===1){p.camps[e.lane].hp=2;note(g,'Repair Convoy repairs base in column '+(e.lane+1)+'.');}}
+   else if(e.id==='repaircrew'){const c=p.camps[e.lane];if(c?.hp>0&&c.hp<c.maxHp){c.hp=c.maxHp;note(g,'Player '+actor+' Repair Convoy restores '+c.name+' to '+c.maxHp+' HP.');}}
    else if(e.id==='ashfall'){for(let slot=0;slot<6;slot++)if(en.units[slot])damageUnit(g,en,slot,1);}
    else if(e.id==='crossfire'){for(const slot of [e.lane,e.lane+3])if(en.units[slot])damageUnit(g,en,slot,2);}
    else if(e.id==='barricade'){for(const slot of [e.lane,e.lane+3])if(p.units[slot])p.units[slot].shield=1;}
@@ -265,7 +285,7 @@ const RULES = (() => {
    else if(e.id==='rally'){for(let i=e.row*3;i<e.row*3+3;i++)if(p.units[i])p.units[i].tempAtk=(p.units[i].tempAtk||0)+1;note(g,'Rallying Cry grants +1 attack to the friendly '+(e.row?'front':'back')+' row for this turn.');}
    else if(e.id==='frenzy'){p.nextRush=true;p.nextRushAtk=1;note(g,'Battle Frenzy primes the next friendly deployment with Rush and +1 ATK.');}
    else if(e.id==='corrosive'){for(let i=e.row*3;i<e.row*3+3;i++)if(en.units[i])damageUnit(g,en,i,1);applyGoo(g,en,e.row);}
-   if(e.id!=='acid'&&e.id!=='doomsday')p.discard.push({id:e.id,uid:e.uid});note(g,e.name+' resolves.');
+   if(e.id!=='acid'&&e.id!=='doomsday')p.discard.push({id:e.id,uid:e.uid});note(g,'Player '+actor+' '+e.name+' resolves.');
    if(!p.ashUsed&&p.camps.some(c=>c.hp>0&&c.baseId==='ash')){draw(g,p);p.ashUsed=true;}
   }
   draw(g,p);note(g,'Player '+actor+' begins: '+p.water+' water, draw 1.');checkWin(g);
@@ -273,10 +293,20 @@ const RULES = (() => {
  function apply(g,actor,a){const err=legal(g,actor,a);if(err)return {ok:false,error:err};const p=own(g,actor),en=foe(g,actor);
  g.lastAction={type:a.type,actor,...(Number.isInteger(a.from)?{from:a.from}:{}),...(Number.isInteger(a.to)?{to:a.to}:{}),...(Number.isInteger(a.lane)?{lane:a.lane}:{}),...(Number.isInteger(a.base)?{base:a.base}:{}),...(a.type==='play'?{cardId:p.hand.find(c=>c.uid===a.uid)?.id}:{})};
  if(a.type==='draft'){
-   p.selected=a.bases.slice();p.camps=a.bases.map((id,i)=>({id:i,baseId:id,name:baseMap[id].name,power:id,hp:2,maxHp:2,used:false,wildUsed:false}));p.drafted=true;
+   p.selected=a.bases.slice();p.camps=a.bases.map((id,i)=>({id:i,baseId:id,name:baseMap[id].name,power:id,hp:10,maxHp:10,used:false,wildUsed:false}));p.drafted=true;
    note(g,'Player '+actor+' locked in three bases.');if(g.players.every(x=>x.drafted)){g.phase='battle';g.active=1;note(g,'Bases revealed. Player 1 begins.');}g.revision++;return {ok:true};
  }
- if(a.type==='draw'){p.water-=2;draw(g,p);}else if(a.type==='silo'){p.water--;p.silo++;}
+ if(a.type==='draw'){p.water-=2;draw(g,p);note(g,'Player '+actor+' draws a card for 2 water.');}
+ else if(a.type==='silo'){p.water--;p.silo++;note(g,'Player '+actor+' stores 1 water in the silo ('+p.silo+' stored).');}
+ else if(a.type==='emptySilo'){const returned=p.silo;p.water+=returned;p.silo=0;note(g,'Player '+actor+' empties the silo and returns '+returned+' stored water to reserves.');}
+ else if(a.type==='reposition'){
+  const moving=p.units[a.from],other=p.units[a.to],cost=defs[moving.id]?.cost||0;p.water-=cost;
+  p.units[a.to]=moving;p.units[a.from]=other||null;
+  for(const slot of [a.from,a.to]){const u=p.units[slot];if(u?.freshRush&&p.gooRows[slot>=3?1:0])u.ready=false;}
+  refreshAuras(g,p);
+  const place=i=>(i>=3?'front':'back')+' row, column '+(i%3+1);
+  note(g,'Player '+actor+' '+(other?'swaps '+moving.name+' with '+other.name:'moves '+moving.name)+' from '+place(a.from)+' to '+place(a.to)+' for '+cost+' water.');
+ }
  else if(a.type==='raid'){p.water-=2;if(p.raids.length){advanceRaid(g,p,p.raids[0],'2-water boost');}else{p.raids.push({lane:a.lane,remaining:2});note(g,'Player '+actor+' launches Raid on column '+(a.lane+1)+' (2 owner turns).');}}
  else if(a.type==='attack'){
    const attacker=p.units[a.from];attacker.ready=false;const targetIndex=frontmost(en,a.to),target=targetIndex>=0?en.units[targetIndex]:null;
@@ -288,10 +318,10 @@ const RULES = (() => {
     if(target.id==='spore'&&p.units[a.from]&&ret>0)weaken(g,p.units[a.from],p);
     note(g,attackerName+' ('+hit+' ATK) clashes with '+targetName+' ('+ret+' ATK).');
     if(attacker.id==='cultist'&&!en.units[targetIndex]&&frontmost(en,a.to)===-1&&en.camps[a.to].hp>0){hitBase(g,en,a.to);note(g,'Flame Cultist ignites exposed base.');}
-    note(g,attacker.name+' attacks '+target.name+'.');}
-   else{const hits=p.breach?2:1;hitBase(g,en,a.to,hits);if(p.breach)p.breach=false;
+    note(g,'Player '+actor+' '+attacker.name+' attacks '+target.name+'.');}
+   else{const damage=combatAtk(attacker,a.from,p)*(p.breach?2:1);hitBase(g,en,a.to,damage);if(p.breach)p.breach=false;
      if(attacker.trait==='saboteur'||attacker.id==='saboteur'){const j=Math.floor(Math.random()*en.hand.length);if(en.hand.length)en.discard.push(en.hand.splice(j,1)[0]);}
-     note(g,attacker.name+' hits enemy base'+(hits>1?' twice':'')+'.');}
+     note(g,'Player '+actor+' '+attacker.name+' attacks the exposed base for '+damage+' damage.');}
    if(attacker.id==='skimmer'&&p.units[a.from]){const other=a.from<3?a.from+3:a.from-3;if(!p.units[other]){p.units[other]=p.units[a.from];p.units[a.from]=null;note(g,'Sand Skimmer changes rows.');}}
  }
  else if(a.type==='play'){
@@ -315,18 +345,19 @@ const RULES = (() => {
      }
      refreshAuras(g,p);
      if(d.effect==='water')gain(g,p,2);if(d.effect==='draw1')draw(g,p);
+     if(isRush)note(g,'Player '+actor+' '+d.name+(canRush?' has RUSH and may attack an enemy person immediately.':' has its immediate Rush attack blocked by Toxic Goo.'));
      if(c.id==='engineer'){const order=[(a.lane+3)%6,0,1,2,3,4,5];const free=order.find(i=>!p.units[i]);if(free!==undefined){p.units[free]={id:'drone',uid:uid(),name:'Scrap Drone',atk:1,hp:1,maxHp:1,ready:false,trait:'',shield:0,tempAtk:0};note(g,'Junker Engineer deploys a Scrap Drone.');}}
      if(c.id==='chem'&&en.units[3+a.lane%3])damageUnit(g,en,3+a.lane%3,2);
    }else if(d.kind==='event')p.events.push({id:c.id,uid:c.uid,name:d.name,remaining:d.count,targeted:!!d.target,lane:d.target?a.lane:null,row:d.target?.endsWith('Row')?a.lane:null});
    else{if(d.effect==='draw2'){draw(g,p);draw(g,p);}if(d.effect==='cache')gain(g,p,2);
      if(d.effect==='storm')frontDamage(g,en,2);if(d.effect==='strike')deal(g,en,a.lane,3);if(d.effect==='sabotage')hitBase(g,en,a.lane);
-     if(d.effect==='patch'){const c=p.camps[a.lane];if(c.hp===1)c.hp=2;else{const n=[p.units[a.lane+3],p.units[a.lane]].find(u=>u&&u.hp<u.maxHp);if(n)n.hp=Math.min(n.maxHp,n.hp+2);}}
+     if(d.effect==='patch'){const c=p.camps[a.lane];if(c.hp>0&&c.hp<c.maxHp)c.hp=c.maxHp;else{const n=[p.units[a.lane+3],p.units[a.lane]].find(u=>u&&u.hp<u.maxHp);if(n)n.hp=Math.min(n.maxHp,n.hp+2);}}
      p.discard.push(c);
    }
    if(d.cost>=3&&p.camps.some(c=>c.hp>0&&c.baseId==='condenser'&&!c.used)){
      const condenser=p.camps.find(c=>c.hp>0&&c.baseId==='condenser'&&!c.used);condenser.used=true;gain(g,p,1);
    }
-   note(g,'Player '+actor+' plays '+d.name+'.');
+   note(g,'Player '+actor+' plays '+d.name+' ['+d.kind.toUpperCase()+'] for '+d.cost+' water'+(Number.isInteger(a.lane)?' in '+(d.target?.endsWith('Row')?(a.lane?'front':'back')+' row':d.kind==='unit'?(a.lane>=3?'front':'back')+' row, column '+(a.lane%3+1):'column '+(a.lane+1)):'')+'.');
  }
  else if(a.type==='base'){
    const c=p.camps[a.base],b=getBase(p,a.base);p.water-=b.cost;c.used=true;if(b.wild||b.id==='weld')c.wildUsed=true;
@@ -339,7 +370,7 @@ const RULES = (() => {
    if(b.id==='hospital')p.units[a.lane].hp=Math.min(p.units[a.lane].maxHp,p.units[a.lane].hp+2);
    if(b.id==='barrier'){p.units[a.lane].shield=1;}
    if(b.id==='decoy'){p.units[frontmost(p,a.lane)].decoy=1;}
-   if(b.id==='weld'){p.camps[a.lane].hp=2;}
+   if(b.id==='weld'){p.camps[a.lane].hp=p.camps[a.lane].maxHp;}
    if(b.id==='radar'){const x=[];for(let i=0;i<2&&g.sharedDeck.length;i++)x.push(g.sharedDeck.pop());if(x.length){x.sort((a,b)=>((defs[b.id]?.cost||0)-(defs[a.id]?.cost||0)));if(p.hand.length<9)p.hand.push(x[0]);else p.discard.push(x[0]);if(x[1])g.sharedDeck.unshift(x[1]);}}
    if(b.id==='intercept')p.revealHand=true;
    if(b.id==='archive'){const idx=p.discard.findIndex(c=>defs[c.id]?.kind==='tactic');if(idx>=0)g.sharedDeck.push(p.discard.splice(idx,1)[0]);}
@@ -354,7 +385,7 @@ const RULES = (() => {
    if(b.id==='puppet'){const slot=frontmost(p,a.lane),target=frontmost(en,a.lane);p.units[slot].hp=0;kill(g,p,slot);const taken=en.units[target];en.units[target]=null;const free=p.units.findIndex(u=>u===null);p.units[free]={...taken,ready:false};}
    if(b.id==='chrono'){p.discard.push(...p.hand.splice(0));p.extraTurn=true;}
    if(b.id==='wormhole'){const x=a.base,y=a.lane;for(const d of [0,3]){const temp=p.units[x+d];p.units[x+d]=en.units[y+d];en.units[y+d]=temp;if(p.units[x+d])p.units[x+d].ready=false;if(en.units[y+d])en.units[y+d].ready=false;}hitBase(g,p,a.base);}
-   if(b.id==='lottery'){p.discard.push(...p.hand.splice(0,2));const items=[];for(let i=0;i<5&&g.sharedDeck.length;i++)items.push(g.sharedDeck.pop());let deployed=0;for(const q of items){const free=p.units.findIndex(u=>!u);if(defs[q.id]?.kind==='unit'&&free>=0&&deployed<2){const d=defs[q.id];p.units[free]={id:q.id,uid:q.uid,name:d.name,atk:d.atk,hp:d.hp,maxHp:d.hp,ready:false,trait:d.trait||'',shield:0,tempAtk:0};deployed++;}else p.discard.push(q);}}
+   if(b.id==='lottery'){p.discard.push(...p.hand.splice(0,2));const items=[];for(let i=0;i<5&&g.sharedDeck.length;i++)items.push(g.sharedDeck.pop());let deployed=0;for(const q of items){const free=p.units.findIndex(u=>!u);if(defs[q.id]?.kind==='unit'&&free>=0&&deployed<2){const d=defs[q.id],rush=d.trait==='rush'&&!p.gooRows[free>=3?1:0];p.units[free]={id:q.id,uid:q.uid,name:d.name,atk:d.atk,hp:d.hp,maxHp:d.hp,ready:rush,freshRush:rush,trait:d.trait||'',shield:0,tempAtk:0};deployed++;note(g,'Player '+actor+' deploys '+d.name+' from Bone Lottery'+(rush?' — RUSH READY.':'.'));}else p.discard.push(q);}}
    if(b.id==='doomsday'){const slot=frontmost(p,a.base);p.units[slot].hp=0;kill(g,p,slot);p.events.push({id:'doomsday',name:'Doomsday Marker',remaining:1,lane:a.lane,targeted:false});}
    note(g,b.name+' activates for Player '+actor+'.');
  }
@@ -371,7 +402,7 @@ const RULES = (() => {
   camps:p.camps.map(c=>({...c})),offer:p.id===viewer?p.offer.slice():null,selected:p.drafted&&g.phase==='battle'?p.selected.slice():p.id===viewer?p.selected.slice():[],drafted:p.drafted,
   units:p.units.map(u=>u?{...u}:null),silo:p.silo,events:p.events.map(e=>({...e})),raids:p.raids.map(r=>({...r})),gooRows:p.gooRows.slice(),nextRush:p.nextRush,deckCount:g.sharedDeck.length,discardCount:p.discard.length,
   handCount:p.hand.length,hand:p.id===viewer||g.players[viewer-1].revealHand?p.hand.map(x=>({...x})):null});
-  return {phase:g.phase,active:g.active,turn:g.turn,winner:g.winner,lastAction:g.lastAction?{...g.lastAction}:null,sharedDeckCount:g.sharedDeck.length,sharedPoolSize:decklist.length,players:g.players.map(projection),log:g.log.slice(0,15),revision:g.revision};
+  return {phase:g.phase,active:g.active,turn:g.turn,winner:g.winner,lastAction:g.lastAction?{...g.lastAction}:null,reveals:(g.reveals||[]).map(r=>({...r})),sharedDeckCount:g.sharedDeck.length,sharedPoolSize:decklist.length,players:g.players.map(projection),log:g.log.slice(),revision:g.revision};
  }
  return {defs,baseDefs,baseMap,decklist,newGame,newTestGame,legal,apply,project};
 })();

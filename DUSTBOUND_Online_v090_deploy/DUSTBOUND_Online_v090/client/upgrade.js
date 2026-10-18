@@ -69,12 +69,13 @@ function animateTransition(before,v){
    const existing=u?Object.values(before.sides).flatMap(s=>s.units).find(x=>x?.uid===u.uid):null;
    if(u&&!existing){if(!fxReduced())p2ReplayClass(node,'fx-materialize',660);floatAt(fxRect(node),'DEPLOYED','shield');}
    if(u&&existing&&u.hp<existing.hp)setTimeout(()=>{if(!fxReduced())p2ReplayClass(node,'fx-impact',420);floatAt(fxRect(node),'-'+(existing.hp-u.hp));},delay);
+   if(u&&existing&&u.hp>existing.hp)floatAt(fxRect(node),'+'+(u.hp-existing.hp)+' HP','water');
    if(u?.shield){node?.classList.add('shielded');if(!existing?.shield){if(!fxReduced())p2ReplayClass(node,'barrier-applied',800);floatAt(fxRect(node),'BARRIER APPLIED','shield');}}
    if(existing?.shield&&!u?.shield&&action.type!=='end'){floatAt(existing.rect,'BLOCKED','shield');}
   }
   for(let i=0;i<3;i++){
    const prior=old.camps[i],c=p.camps[i];if(c&&prior&&c.hp<prior.hp){const rect=fxRect(fxElm(owner,i,true))||prior.rect;
-    setTimeout(()=>{if(!fxReduced()){fxBaseHit(rect,c.hp===0);if(c.hp===0)fxDeath(prior);}floatAt(rect,'−'+(prior.hp-c.hp)+' BASE HIT'+(prior.hp-c.hp===1?'':'S'));if(c.hp===0)setTimeout(()=>floatAt(rect,'BASE DESTROYED','destroyed'),330);},delay);
+    setTimeout(()=>{if(!fxReduced()){fxBaseHit(rect,c.hp===0);if(c.hp===0)fxDeath(prior);}floatAt(rect,'−'+(prior.hp-c.hp)+' DAMAGE');if(c.hp===0)setTimeout(()=>floatAt(rect,'BASE DESTROYED','destroyed'),330);},delay);
    }
   }
  }
@@ -138,6 +139,7 @@ function updateTargetLines(point){
  if(point)add({x:point.x,y:point.y},true);
 }
 $('board-wrap').addEventListener('pointerdown',e=>{
+ if(selected?.kind?.startsWith('reposition'))return;
  if(e.button!==0||!getMyTurn()||projected()?.phase!=='battle')return;
  const hand=e.target.closest('[data-card]'),unit=e.target.closest('.unit-piece');
  if(hand){const c=own(projected()).hand.find(c=>c.uid===hand.dataset.card);if(!c)return;gesture={kind:'card',uid:c.uid,startX:e.clientX,startY:e.clientY,pointer:e.pointerId,started:false};}
