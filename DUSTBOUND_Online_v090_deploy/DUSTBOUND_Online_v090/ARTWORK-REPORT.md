@@ -44,13 +44,14 @@ Source folders: [Events](https://drive.google.com/drive/folders/1_lqfdbeMm7_w9kp
 - Ash Collector, Acid Rain Rig and Storm Redirector still use low-resolution prototypes in all three states.
 - Distress Beacon uses one high-resolution illustration for intact, damaged and destroyed. The game changes the health/state label, but the artwork itself does not change.
 - The other base images exist in all three states, but their source metadata still marks them as candidates needing visual QA. Their thematic assignments have not been certified by this character-only audit.
-- The Blackwater artwork contains painted base structures and concept health values. The test board overlays real base names and 2-health values. Unique base illustrations remain available through inspection/catalogue; the painted structures are not individual base-card art.
+- The test board now displays each selected base’s individual artwork, water cost and real 2-health state over the painted platform. Click an own base to read its full power and cost; active powers have a Use ability button, while passive powers are marked automatic.
 
 ## Display and online fixes in this test build
 
 - Removed the layout rule that letterboxed the whole board. It now fills the browser viewport. A 16:9 screen uses the approved composition at 16:9; differently shaped windows adapt without blank bars. FULL SCREEN expands the browser document while keeping inspection overlays available.
 - Widened the hand from 29% to 67% of the window, with larger cards and multi-line text. Hover or select to read longer effects. Hands above five cards overlap.
 - Added a visible water tank to the silo, animated fill level, actual capacity and next-turn gain. Capacity and water income rules are unchanged.
+- Both event HUDs remain visible when empty, with their turn tracks and a No active events state. Pending events and raids populate the same persistent panels.
 - The earlier 127.0.0.1 link was a local preview address. A separate GitHub branch and public Render test service provide a shareable address. The stable live service remains on main.
 
 The existing version remains v0.10.0. No card balance or gameplay rules were changed.
