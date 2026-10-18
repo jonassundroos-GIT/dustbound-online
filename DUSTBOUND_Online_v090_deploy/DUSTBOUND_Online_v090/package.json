@@ -1,8 +1,15 @@
 {
-  "name":"dustbound-online",
-  "version":"0.9.0",
-  "private":true,
-  "description":"DUSTBOUND online multiplayer: automatic matchmaking, private invitation links, authoritative shared-deck game server",
-  "engines":{"node":">=20"},
-  "scripts":{"start":"node server.js","check":"node --check server.js && node --check rules.cjs"}
+  "name": "dustbound-online",
+  "version": "0.10.0",
+  "private": true,
+  "description": "DUSTBOUND online multiplayer: automatic matchmaking, private invitation links, authoritative shared-deck game server",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check rules.cjs && node scripts/check-page.cjs && node --test test/*.test.cjs",
+    "test": "node --test test/*.test.cjs",
+    "build:client": "node scripts/check-page.cjs"
+  }
 }

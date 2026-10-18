@@ -36,7 +36,7 @@ const RULES = (() => {
  const defs={
  drone:{name:'Scrap Drone',kind:'unit',cost:0,atk:1,hp:1,art:'hound08',text:'Token unit. Cannot be included in decks.'},
  salvager:{name:'Scavenger',kind:'unit',cost:2,atk:1,hp:2,art:'scavenger08',text:'Deploy: draw 1 card.',effect:'draw1'},
- runner:{name:'Water Runner',kind:'unit',cost:2,atk:1,hp:3,art:'runner08',text:'Deploy: generate 1 water.',effect:'water'},
+ runner:{name:'Water Runner',kind:'unit',cost:2,atk:1,hp:3,art:'runner08',text:'Deploy: generate 2 water. At the start of each of your later turns, generate 1 water while this person survives.',effect:'water'},
  hound:{name:'Scrap Hound',kind:'unit',cost:2,atk:2,hp:2,art:'hound08',text:'Rush: may attack a frontmost enemy person on its deployment turn, but cannot attack a base until your next turn.',trait:'rush'},
  raider:{name:'Dune Raider',kind:'unit',cost:3,atk:3,hp:1,art:'raider08',text:'Rush: may attack a frontmost enemy person on its deployment turn, but cannot attack a base until your next turn.',trait:'rush'},
  marksman:{name:'Desert Marksman',kind:'unit',cost:3,atk:2,hp:2,art:'marksman08',text:'Sniper: can attack any column.',trait:'sniper'},
@@ -60,11 +60,11 @@ const RULES = (() => {
  strike:{name:'Mortar Strike',kind:'tactic',cost:3,art:'turret',text:'Deal 3 to frontmost defender or 1 hit to exposed base.',effect:'strike',target:'enemy'},
  sabotage:{name:'Sabotage',kind:'tactic',cost:4,art:'raider',text:'Deal 1 direct base hit, bypassing defenders.',effect:'sabotage',target:'enemy'},
  patch:{name:'Patch Kit',kind:'tactic',cost:2,art:'runner',text:'Repair a damaged base, or heal frontmost damaged person by 2.',effect:'patch',target:'friendly'},
- cache:{name:'Water Cache',kind:'tactic',cost:0,art:'scrounge',text:'Generate 1 water. You cannot hold more than 6 water.',effect:'cache'},
+ cache:{name:'Water Cache',kind:'tactic',cost:0,art:'scrounge',text:'Generate 2 water. You cannot hold more than 6 water.',effect:'cache'},
  supply:{name:'Supply Drop',kind:'event',cost:1,art:'convoy',text:'After 1 of your turns: draw 2 cards.',effect:'supply',count:1},
  fallout:{name:'Fallout Front',kind:'event',cost:3,art:'sandstorm',text:'After 2 of your turns: deal 2 to enemy front row.',effect:'fallout',count:2},
  ambush:{name:'Dust Ambush',kind:'event',cost:2,art:'raider08',text:'After 1 of your turns: deal 2 to the frontmost enemy defender in a chosen column, or hit its base if exposed.',effect:'ambush',target:'enemy',count:1},
- caravan:{name:'Salvage Caravan',kind:'event',cost:2,art:'convoy08',text:'After 2 of your turns: generate 2 water, up to the six-water holding limit.',effect:'caravan',count:2},
+ caravan:{name:'Salvage Caravan',kind:'event',cost:2,art:'convoy08',text:'After 1 of your turns: generate 3 water, up to the six-water holding limit.',effect:'caravan',count:1},
  repaircrew:{name:'Repair Convoy',kind:'event',cost:2,art:'medic08',text:'After 1 of your turns: repair a damaged friendly base in the chosen column. Cannot revive a destroyed base.',effect:'repaircrew',target:'friendly',count:1},
  ashfall:{name:'Toxic Ashfall',kind:'event',cost:3,art:'sandstorm',text:'After 2 of your turns: deal 1 damage to every enemy person.',effect:'ashfall',count:2},
  crossfire:{name:'Crossfire',kind:'event',cost:3,art:'harpoon081',text:'After 1 of your turns: deal 2 damage to each enemy person in the chosen column.',effect:'crossfire',target:'enemy',count:1},
@@ -86,7 +86,7 @@ const RULES = (() => {
  };
  // ONE shared draw pile: 30 established cards and 10 new synergy cards = 40 physical cards total.
  // Existing card types not included here remain defined but are not present in the default pool.
- const originalPool=['salvager','runner','hound','raider','marksman','convoy','marauder','turret','medic','saboteur','stalker','engineer','warden','cultist','skimmer','collector','harpoon','chem','golem','radio','cache','scrounge','strike','patch','supply','fallout','ambush','repaircrew','reinforcements','recon'];
+ const originalPool=['salvager','runner','hound','raider','marksman','convoy','marauder','turret','medic','saboteur','stalker','engineer','warden','cultist','skimmer','collector','harpoon','chem','golem','radio','cache','scrounge','strike','patch','supply','fallout','ambush','repaircrew','reinforcements','recon','caravan'];
  const addedPool=['gooalch','banner','herald','surgeon','spore','conductor','viscous','rally','frenzy','corrosive'];
  const decklist=[...originalPool,...addedPool];
  let uidCount=1;
@@ -101,7 +101,7 @@ const RULES = (() => {
    offers[player]=shuffle(offers[player]);
  }return offers;}
  function player(id,offer){return {id,water:3,maxWater:6,bonusGenerated:0,turnsStarted:id===1?1:0,camps:[],offer,selected:[],drafted:false,units:[null,null,null,null,null,null],silo:0,events:[],raids:[],hand:[],discard:[],revealHand:false,breach:false,extraTurn:false,ashUsed:false,gooRows:[0,0],nextRush:false,nextRushAtk:0};}
- function newGame(){const offers=draftOffers();const g={version:814,phase:'draft',active:1,turn:1,winner:0,sharedDeck:shuffle(decklist.map(card)),players:[player(1,offers[0]),player(2,offers[1])],log:[],revision:1};g.players.forEach(p=>{for(let i=0;i<4;i++)draw(g,p);});note(g,'Shared 40-card draw pile: 30 originals + 10 new cards; four opening cards per player.');note(g,'Draft: each player selects 3 of 8 unique base offers.');return g;}
+ function newGame(){const offers=draftOffers();const g={version:814,phase:'draft',active:1,turn:1,winner:0,sharedDeck:shuffle(decklist.map(card)),players:[player(1,offers[0]),player(2,offers[1])],log:[],revision:1};g.players.forEach(p=>{for(let i=0;i<4;i++)draw(g,p);});note(g,'Shared 41-card draw pile, including Salvage Caravan; four opening cards per player.');note(g,'Draft: each player selects 3 of 8 unique base offers.');return g;}
  function newTestGame(ids){
    if(!Array.isArray(ids)||ids.length!==3||new Set(ids).size!==3||ids.some(id=>!baseMap[id]))throw Error('Choose three different bases.');
    const g=newGame();
@@ -111,7 +111,7 @@ const RULES = (() => {
      p.camps=ids.map((id,i)=>({id:i,baseId:id,name:baseMap[id].name,power:id,hp:2,maxHp:2,used:false,wildUsed:false}));
    }
    g.phase='battle';g.active=1;
-   note(g,'QUICK TEST: mirrored bases, one freshly shuffled shared 40-card pile, random hands.');
+   note(g,'QUICK TEST: mirrored bases, one freshly shuffled shared 41-card pile, random hands.');
    g.revision++;
    return g;
  }
@@ -241,7 +241,7 @@ const RULES = (() => {
    note(g,'Player '+p.id+' Raid RESOLVES in column '+(raid.lane+1)+'.');
   }
  }
- function startTurn(g,actor){const p=own(g,actor);g.active=actor;g.turn++;p.turnsStarted++;p.water=Math.min(6,(actor===2 && p.turnsStarted===1 ? 4 : 3)+p.silo);p.silo=0;p.bonusGenerated=0;p.ashUsed=false;p.revealHand=false;p.breach=false;
+ function startTurn(g,actor){const p=own(g,actor);g.active=actor;g.turn++;p.turnsStarted++;const stored=p.silo;p.water=Math.min(6,(actor===2 && p.turnsStarted===1 ? 4 : 3)+stored);p.silo=0;p.bonusGenerated=0;p.siloGained=stored;for(const u of p.units)if(u?.id==='runner')gain(g,p,1);p.ashUsed=false;p.revealHand=false;p.breach=false;
   // Advance raids only on their owner's turn start. The newly launched raid does not tick until their NEXT turn.
   for(const raid of p.raids.slice())advanceRaid(g,p,raid,'turn start');
   p.camps.forEach(c=>c.used=false);if(p.units.some(u=>u?.id==='radio')&&g.sharedDeck.length){const top=g.sharedDeck[g.sharedDeck.length-1];note(g,'Radio Operator scans: '+defs[top.id].name+'.');if(defs[top.id].cost>=4){g.sharedDeck.unshift(g.sharedDeck.pop());note(g,'Radio Operator sends an expensive card to the bottom.');}}p.units.forEach((u,i)=>{if(u){u.ready=true;u.freshRush=false;u.tempAtk=0;u.shield=0;u.decoy=0;u.conductorUsed=false;if(u.id==='medic'){const other=p.units[i%3]||p.units[i%3+3];if(other&&other.hp<other.maxHp)other.hp++;}}});
@@ -252,7 +252,7 @@ const RULES = (() => {
    else if(e.id==='acid')for(const slot of [e.lane,e.lane+3])damageUnit(g,en,slot,1);
    else if(e.id==='doomsday'){for(const slot of [e.lane,e.lane+3]){if(en.units[slot]){en.units[slot].hp=0;kill(g,en,slot);}if(p.units[slot]){p.units[slot].hp=0;kill(g,p,slot);}}if(frontmost(en,e.lane)<0)hitBase(g,en,e.lane);if(frontmost(p,e.lane)<0)hitBase(g,p,e.lane);}
    else if(e.id==='ambush')deal(g,en,e.lane,2);
-   else if(e.id==='caravan')gain(g,p,2);
+   else if(e.id==='caravan')gain(g,p,3);
    else if(e.id==='repaircrew'){if(p.camps[e.lane]?.hp===1){p.camps[e.lane].hp=2;note(g,'Repair Convoy repairs base in column '+(e.lane+1)+'.');}}
    else if(e.id==='ashfall'){for(let slot=0;slot<6;slot++)if(en.units[slot])damageUnit(g,en,slot,1);}
    else if(e.id==='crossfire'){for(const slot of [e.lane,e.lane+3])if(en.units[slot])damageUnit(g,en,slot,2);}
@@ -271,6 +271,7 @@ const RULES = (() => {
   draw(g,p);note(g,'Player '+actor+' begins: '+p.water+' water, draw 1.');checkWin(g);
  }
  function apply(g,actor,a){const err=legal(g,actor,a);if(err)return {ok:false,error:err};const p=own(g,actor),en=foe(g,actor);
+ g.lastAction={type:a.type,actor,...(Number.isInteger(a.from)?{from:a.from}:{}),...(Number.isInteger(a.to)?{to:a.to}:{}),...(Number.isInteger(a.lane)?{lane:a.lane}:{}),...(Number.isInteger(a.base)?{base:a.base}:{}),...(a.type==='play'?{cardId:p.hand.find(c=>c.uid===a.uid)?.id}:{})};
  if(a.type==='draft'){
    p.selected=a.bases.slice();p.camps=a.bases.map((id,i)=>({id:i,baseId:id,name:baseMap[id].name,power:id,hp:2,maxHp:2,used:false,wildUsed:false}));p.drafted=true;
    note(g,'Player '+actor+' locked in three bases.');if(g.players.every(x=>x.drafted)){g.phase='battle';g.active=1;note(g,'Bases revealed. Player 1 begins.');}g.revision++;return {ok:true};
@@ -313,11 +314,11 @@ const RULES = (() => {
        note(g,'Mutant Surgeon permanently improves '+beneficiary.name+' maximum health by 1.');
      }
      refreshAuras(g,p);
-     if(d.effect==='water')gain(g,p,1);if(d.effect==='draw1')draw(g,p);
+     if(d.effect==='water')gain(g,p,2);if(d.effect==='draw1')draw(g,p);
      if(c.id==='engineer'){const order=[(a.lane+3)%6,0,1,2,3,4,5];const free=order.find(i=>!p.units[i]);if(free!==undefined){p.units[free]={id:'drone',uid:uid(),name:'Scrap Drone',atk:1,hp:1,maxHp:1,ready:false,trait:'',shield:0,tempAtk:0};note(g,'Junker Engineer deploys a Scrap Drone.');}}
      if(c.id==='chem'&&en.units[3+a.lane%3])damageUnit(g,en,3+a.lane%3,2);
    }else if(d.kind==='event')p.events.push({id:c.id,uid:c.uid,name:d.name,remaining:d.count,targeted:!!d.target,lane:d.target?a.lane:null,row:d.target?.endsWith('Row')?a.lane:null});
-   else{if(d.effect==='draw2'){draw(g,p);draw(g,p);}if(d.effect==='cache')gain(g,p,1);
+   else{if(d.effect==='draw2'){draw(g,p);draw(g,p);}if(d.effect==='cache')gain(g,p,2);
      if(d.effect==='storm')frontDamage(g,en,2);if(d.effect==='strike')deal(g,en,a.lane,3);if(d.effect==='sabotage')hitBase(g,en,a.lane);
      if(d.effect==='patch'){const c=p.camps[a.lane];if(c.hp===1)c.hp=2;else{const n=[p.units[a.lane+3],p.units[a.lane]].find(u=>u&&u.hp<u.maxHp);if(n)n.hp=Math.min(n.maxHp,n.hp+2);}}
      p.discard.push(c);
@@ -358,17 +359,19 @@ const RULES = (() => {
    note(g,b.name+' activates for Player '+actor+'.');
  }
  else if(a.type==='end'){
+   const capacity=p.camps.some(c=>c.hp>0&&c.baseId==='reservoir')?2:1;const stored=Math.min(p.water,Math.max(0,capacity-p.silo));if(stored){p.water-=stored;p.silo+=stored;note(g,'Player '+actor+' automatically stores '+stored+' water in the silo.');}
+
    p.units.forEach(u=>{if(u){u.tempAtk=0;if(u.weakenedTurns){u.weakenedTurns--;if(!u.weakenedTurns)u.weakened=0;}}});p.gooRows=[0,0];
    if(p.extraTurn){p.extraTurn=false;startTurn(g,actor);note(g,'CHRONO BREAKER: extra turn.');}
    else startTurn(g,actor===1?2:1);
  }
  g.revision++;checkWin(g);return {ok:true};
  }
- function project(g,viewer){const projection=p=>({id:p.id,water:p.water,maxWater:p.maxWater,bonusGenerated:p.bonusGenerated,
+ function project(g,viewer){const projection=p=>({id:p.id,water:p.water,maxWater:p.maxWater,bonusGenerated:p.bonusGenerated,siloGained:p.siloGained||0,
   camps:p.camps.map(c=>({...c})),offer:p.id===viewer?p.offer.slice():null,selected:p.drafted&&g.phase==='battle'?p.selected.slice():p.id===viewer?p.selected.slice():[],drafted:p.drafted,
   units:p.units.map(u=>u?{...u}:null),silo:p.silo,events:p.events.map(e=>({...e})),raids:p.raids.map(r=>({...r})),gooRows:p.gooRows.slice(),nextRush:p.nextRush,deckCount:g.sharedDeck.length,discardCount:p.discard.length,
   handCount:p.hand.length,hand:p.id===viewer||g.players[viewer-1].revealHand?p.hand.map(x=>({...x})):null});
-  return {phase:g.phase,active:g.active,turn:g.turn,winner:g.winner,sharedDeckCount:g.sharedDeck.length,sharedPoolSize:decklist.length,players:g.players.map(projection),log:g.log.slice(0,15),revision:g.revision};
+  return {phase:g.phase,active:g.active,turn:g.turn,winner:g.winner,lastAction:g.lastAction?{...g.lastAction}:null,sharedDeckCount:g.sharedDeck.length,sharedPoolSize:decklist.length,players:g.players.map(projection),log:g.log.slice(0,15),revision:g.revision};
  }
  return {defs,baseDefs,baseMap,decklist,newGame,newTestGame,legal,apply,project};
 })();

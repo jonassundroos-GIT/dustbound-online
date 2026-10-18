@@ -18,17 +18,19 @@ const serverStart = Date.now();
 const rooms = new Map(), clients = new Set(), waiting = [];
 const roomCode = () => crypto.randomBytes(9).toString('base64url');
 const playerToken = () => crypto.randomBytes(24).toString('base64url');
-const page = fs.readFileSync(path.join(__dirname, 'public', 'index.html'));
+const page = require('./ui-patch.cjs')(fs.readFileSync(path.join(__dirname, 'public', 'index.html')));
 const gzPage = zlib.gzipSync(page, {level: 6});
 function answer(res, status, headers, data) {res.writeHead(status, headers);res.end(data);}
 const httpServer = http.createServer((req,res) => {
   const url = new URL(req.url || '/', 'http://localhost');
   if (req.method !== 'GET') return answer(res,405,{'content-type':'text/plain'},'Method not allowed');
-  if (url.pathname === '/healthz') return answer(res,200,{'content-type':'application/json','cache-control':'no-store'},JSON.stringify({ok:true,version:'0.9.0',matches:[...rooms.values()].filter(r=>r.game).length,queue:waiting.filter(c=>c.alive&&c.queueing).length,uptimeSeconds:Math.floor((Date.now()-serverStart)/1000)}));
+  if (url.pathname === '/healthz') return answer(res,200,{'content-type':'application/json','cache-control':'no-store'},JSON.stringify({ok:true,version:'0.10.0',matches:[...rooms.values()].filter(r=>r.game).length,queue:waiting.filter(c=>c.alive&&c.queueing).length,uptimeSeconds:Math.floor((Date.now()-serverStart)/1000)}));
   if (url.pathname === '/' || url.pathname === '/index.html') {
     const compressed = /\bgzip\b/.test(req.headers['accept-encoding'] || '');
     return answer(res,200,{'content-type':'text/html; charset=utf-8','cache-control':'no-cache','x-content-type-options':'nosniff','content-security-policy':"frame-ancestors 'none'",...(compressed?{'content-encoding':'gzip'}:{})},compressed?gzPage:page);
   }
+  const assets={'/upgrade.css':['upgrade.css','text/css; charset=utf-8'],'/arena.webp':['arena.webp','image/webp'],'/beacon.webp':['beacon.webp','image/webp']};
+  if(assets[url.pathname]){const [file,mime]=assets[url.pathname];return answer(res,200,{'content-type':mime,'cache-control':'no-cache'},fs.readFileSync(path.join(__dirname,'public',file)));}
   if (url.pathname === '/robots.txt')return answer(res,200,{'content-type':'text/plain'},'User-agent: *\nDisallow: /\n');
   return answer(res,404,{'content-type':'text/plain'},'Not found');
 });
@@ -178,7 +180,7 @@ httpServer.on('upgrade',(req,socket,head)=>{
   const accept=crypto.createHash('sha1').update(req.headers['sec-websocket-key']+'258EAFA5-E914-47DA-95CA-C5AB0DC85B11').digest('base64');
   socket.write('HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: '+accept+'\r\n\r\n');
   const peer=new Peer(socket);if(head?.length)peer.onData(head);
-  peer.send({type:'connected',version:'0.9.0'});
+  peer.send({type:'connected',version:'0.10.0'});
 });
 setInterval(()=>{
   const now=Date.now();for(const c of clients){if(now-c.lastPong>HEARTBEAT_MS*3){c.disconnect();continue;}c.frame(9,Buffer.from('hi'));}
