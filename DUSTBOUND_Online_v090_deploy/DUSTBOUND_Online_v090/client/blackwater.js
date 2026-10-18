@@ -28,9 +28,9 @@ activateBase=function(index){inspectBase('me',index);};
 inspectBase=function(owner,index){
  const v=projected();if(!v)return;
  const p=owner==='me'?own(v):foe(v),c=p.camps[index],b=RULES.baseMap[c?.baseId];if(!b)return;
- inspectDefinition(b,'base_'+b.id+(c.hp<=0?'_destroyed':c.hp<c.maxHp?'_damaged':'_intact'),'BASE · '+b.category.toUpperCase());
+ inspectDefinition(b,'base_'+b.id+'_'+baseVisualState(c),'BASE · '+b.category.toUpperCase());
  const once=b.wild||b.id==='weld';
- const state=(c.hp<=0?'DESTROYED':c.hp<c.maxHp?'DAMAGED':'INTACT')+' · '+c.hp+'/'+c.maxHp+' HEALTH';
+ const state=baseVisualState(c).toUpperCase()+' · '+c.hp+'/'+c.maxHp+' HEALTH';
  const timing=b.target==='passive'?'PASSIVE · AUTOMATIC':once?'ONCE PER MATCH':'ONCE PER TURN';
  $('inspectDesc').textContent=b.text+'\n\n'+b.cost+' WATER · '+timing+'\n'+state;
  if(owner!=='me')return;
@@ -121,8 +121,8 @@ render=function(){
   const p=el.dataset.owner==='me'?own(v):foe(v),c=p.camps[Number(el.dataset.lane)];
   if(c){
    const b=RULES.baseMap[c.baseId];
-   el.querySelector('.camp-hp').textContent=c.hp+'/'+c.maxHp+' HP · '+(c.hp<=0?'DESTROYED':c.used?'USED':c.hp<c.maxHp?'DAMAGED':'INTACT');
-   el.querySelector('.camp-art').alt=b.name+' — '+(c.hp<=0?'destroyed':c.hp<c.maxHp?'damaged':'intact');
+   el.querySelector('.camp-hp').textContent=c.hp+'/'+c.maxHp+' HP · '+baseVisualState(c).toUpperCase()+(c.used?' · USED':'');
+   el.querySelector('.camp-art').alt=b.name+' — '+baseVisualState(c);
    el.querySelector('.base-cost-mark').setAttribute('aria-label',b.cost+' water');
    const cost=document.createElement('span');cost.className='base-water-label';cost.textContent=b.cost+' WATER'+(b.target==='passive'?' · PASSIVE':'');
    el.querySelector('.camp-title').after(cost);

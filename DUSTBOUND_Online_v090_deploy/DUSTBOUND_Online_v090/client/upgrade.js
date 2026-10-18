@@ -11,6 +11,7 @@ let upgradePrevious=null,upgradeViewer=1,upgradeRole='none',gesture=null,ignoreN
 const renderCore=render,dispatchCore=dispatch;
 
 function cardKind(d){return d.kind==='unit'?'PERSON':d.kind==='event'?'DELAYED EVENT':d.kind==='base'?'BASE':'TACTIC';}
+function baseVisualState(c){return c.hp<=0?'destroyed':c.hp<=5?'damaged':'intact';}
 function fitHand(){
  const holder=$('myHand'),cards=[...holder.querySelectorAll('[data-card]')];if(!cards.length)return;
  const available=Math.max(100,holder.clientWidth-14),count=cards.length;
@@ -115,8 +116,8 @@ function inspectDefinition(d,art,type){
  $('inspectDesc').textContent=d.text+(d.kind==='unit'?'\n\nAttack '+d.atk+' · Health '+d.hp:'');$('inspectAttack').style.display='none';modal('inspectOverlay',true);
 }
 function inspectBase(owner,index){const v=projected();if(!v)return;const c=(owner==='me'?own(v):foe(v)).camps[index],b=RULES.baseMap[c?.baseId];if(!b)return;
- inspectDefinition(b,'base_'+b.id+(c.hp<=0?'_destroyed':c.hp===1?'_damaged':'_intact'),'BASE · '+b.category.toUpperCase());
- $('inspectDesc').textContent=b.text+'\n\n'+(c.hp<=0?'DESTROYED':c.hp===1?'DAMAGED · 1/2 HEALTH':'INTACT · 2/2 HEALTH')+' · '+(b.target==='passive'?'PASSIVE':b.wild?'ONCE PER MATCH':c.used?'USED THIS TURN':'ONCE PER TURN')+(owner==='me'?'\nClick your base on the board to activate its ability.':'');
+ inspectDefinition(b,'base_'+b.id+'_'+baseVisualState(c),'BASE · '+b.category.toUpperCase());
+ $('inspectDesc').textContent=b.text+'\n\n'+baseVisualState(c).toUpperCase()+' · '+c.hp+'/'+c.maxHp+' HEALTH · '+(b.target==='passive'?'PASSIVE':b.wild?'ONCE PER MATCH':c.used?'USED THIS TURN':'ONCE PER TURN')+(owner==='me'?'\nClick your base on the board to activate its ability.':'');
 }
 let catalogKind='unit';
 function showCatalog(kind='unit'){

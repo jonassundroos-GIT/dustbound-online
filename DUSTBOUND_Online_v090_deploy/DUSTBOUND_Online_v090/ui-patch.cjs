@@ -30,13 +30,13 @@ module.exports=function upgradePage(source){
  const uiStart=html.indexOf('function isLaneTarget(');
  if(uiStart<0)throw Error('Client health anchors missing');
  html=html.slice(0,uiStart)+html.slice(uiStart)
-  .replaceAll('c.hp===1','(c.hp>0&&c.hp<c.maxHp)')
+  .replaceAll('c.hp===1',"(baseVisualState(c)==='damaged')")
   .replaceAll('p.camps[column].hp===1','(p.camps[column].hp>0&&p.camps[column].hp<p.camps[column].maxHp)')
   .replace('(50*c.hp)','(100*c.hp/c.maxHp)');
  html=html.replace('id="gameRoster">CHARACTERS','id="gameRoster">CATALOGUE').replace('id="viewRoster">VIEW 26 CHARACTERS','id="viewRoster">CARD CATALOGUE');
  html=html.replace('Twenty-six playable people and units','Card catalogue').replace('THE TWENTY-SIX','CARD CATALOGUE').replace('Twenty-six approved people · v0.8.15 full-art review','People, bases, events and tactics · complete rules and artwork');
  html=html.replace('DUSTBOUND — v0.9.0 RULES','DUSTBOUND — v0.10.0 RULES');
- html=html.replace('A base has 2 states of health:', 'Every base starts with 10 HP. Its visual states are:');
+ html=html.replace('A base has 2 states of health:', 'Every base starts with 10 HP: intact at 6–10 HP, damaged at 1–5 HP, destroyed at 0 HP. Its visual states are:');
  html=html.replace('Units deal their attack damage to units, but each successful exposed base attack causes exactly 1 base hit.', 'People deal their current attack value as damage to people and exposed bases. Printed base-hit effects still deal 1 damage per hit.');
  html=html.replace('The Water Silo stores 1 water (2 with Reservoir Nine), bought for 1 water per stored water.', 'The Water Silo stores 1 water (2 with Reservoir Nine), bought for 1 water per stored water. EMPTY SILO returns all stored water immediately, including on the turn it was stored; make room within the 6-water reserve first. CHANGE LANES moves a friendly person to an empty slot or swaps with another friendly person for only the selected person’s printed water cost. Anchored people cannot move. Moving preserves readiness and exhaustion. HISTORY shows public plays and ability results for the whole match.');
  html=html.replace('Water Cache costs 0 water and generates 1 water.','Water Cache costs 0 and generates 2 water. Water Runner generates 2 on deployment, then 1 at each later turn start while it survives. Salvage Caravan costs 2 and generates 3 after 1 owner turn.');
