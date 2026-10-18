@@ -115,3 +115,9 @@ html,body{height:100%;overflow:hidden;background:#071417}
 #inspectArt{object-fit:contain!important;object-position:center!important;background:#08171c}
 /* Wide board pieces display the whole portrait so heads cannot be cropped. */
 .unit-piece img{object-fit:contain;object-position:center top;height:100%;background:#0b1b20}.hand-card .hand-name{top:auto;bottom:64%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-height:24px}.hand-card:hover .hand-name,.hand-card.selected .hand-name{top:49%;bottom:auto;white-space:normal;max-height:none}
+/* A selected card must not cover the back row while choosing its destination. */
+.hand-card.selected,.hand-card.selected:hover{height:100%;transform:translateY(-4px) scale(1.02)}
+.hand-card.selected img,.hand-card.selected:hover img{height:55%;object-fit:cover;object-position:50% 8%}
+.hand-card.selected .hand-name,.hand-card.selected:hover .hand-name{top:auto;bottom:64%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-height:24px;font-size:clamp(10px,.7vw,15px)}
+.hand-card.selected .kind,.hand-card.selected:hover .kind{top:auto;bottom:54%}
+.hand-card.selected .hand-text,.hand-card.selected:hover .hand-text{height:53%;padding:5px 8px;font:clamp(11px,.7vw,14px)/1.25 system-ui!important}
