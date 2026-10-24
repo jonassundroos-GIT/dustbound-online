@@ -9,6 +9,7 @@ const targetSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');tar
 targetSvg.innerHTML='<defs><marker id="targetArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#b8efff"/></marker></defs><g id="targetPaths"></g>';
 let upgradePrevious=null,upgradeViewer=1,upgradeRole='none',gesture=null,ignoreNextClick=false,turnBannerTimer;
 const renderCore=render,dispatchCore=dispatch;
+let queueVisual=(fn,delay)=>setTimeout(fn,delay);
 
 function cardKind(d){return d.kind==='unit'?'PERSON':d.kind==='event'?'DELAYED EVENT':d.kind==='base'?'BASE':'TACTIC';}
 function baseVisualState(c){return c.hp<=0?'destroyed':c.hp<=5?'damaged':'intact';}
@@ -49,7 +50,7 @@ function animateAttack(before,action){
 }
 function animateTransition(before,v){
  if(!before||v.phase!=='battle'||before.view.phase!=='battle')return;
- const action=v.lastAction||{},delay=action.type==='attack'?280:70;
+ const action=v.lastAction||{},delay=action.type==='attack'?280:action.type==='play'&&defs[action.cardId]?.kind==='tactic'?230:70;
  if(action.type==='play'&&!fxReduced()){
   const owner=action.actor===me?'me':'enemy',d=defs[action.cardId];
   const old=before.sides[action.actor],next=v.players[action.actor-1];
@@ -66,17 +67,17 @@ function animateTransition(before,v){
   const old=before.sides[p.id],owner=p.id===me?'me':'enemy';if(!old)continue;
   for(let i=0;i<6;i++){
    const prior=old.units[i],u=p.units[i],node=fxElm(owner,i);
-   if(prior&&!alive.has(prior.uid))setTimeout(()=>{if(!fxReduced())fxDeath(prior);floatAt(prior.rect,'DESTROYED','destroyed');},delay);
+   if(prior&&!alive.has(prior.uid))queueVisual(()=>{if(!fxReduced())fxDeath(prior);floatAt(prior.rect,'DESTROYED','destroyed');},delay);
    const existing=u?Object.values(before.sides).flatMap(s=>s.units).find(x=>x?.uid===u.uid):null;
    if(u&&!existing){if(!fxReduced())p2ReplayClass(node,'fx-materialize',660);floatAt(fxRect(node),'DEPLOYED','shield');}
-   if(u&&existing&&u.hp<existing.hp)setTimeout(()=>{if(!fxReduced())p2ReplayClass(node,'fx-impact',420);floatAt(fxRect(node),'-'+(existing.hp-u.hp));},delay);
+   if(u&&existing&&u.hp<existing.hp){const hitRect=fxRect(node);queueVisual(()=>{if(!fxReduced()&&node?.isConnected)p2ReplayClass(node,'fx-impact',420);floatAt(hitRect,'-'+(existing.hp-u.hp));},delay);}
    if(u&&existing&&u.hp>existing.hp)floatAt(fxRect(node),'+'+(u.hp-existing.hp)+' HP','water');
    if(u?.shield){node?.classList.add('shielded');if(!existing?.shield){if(!fxReduced())p2ReplayClass(node,'barrier-applied',800);floatAt(fxRect(node),'BARRIER APPLIED','shield');}}
    if(existing?.shield&&!u?.shield&&action.type!=='end'){floatAt(existing.rect,'BLOCKED','shield');}
   }
   for(let i=0;i<3;i++){
    const prior=old.camps[i],c=p.camps[i];if(c&&prior&&c.hp<prior.hp){const rect=fxRect(fxElm(owner,i,true))||prior.rect;
-    setTimeout(()=>{if(!fxReduced()){fxBaseHit(rect,c.hp===0);if(c.hp===0)fxDeath(prior);}floatAt(rect,'−'+(prior.hp-c.hp)+' DAMAGE');if(c.hp===0)setTimeout(()=>floatAt(rect,'BASE DESTROYED','destroyed'),330);},delay);
+    queueVisual(()=>{if(!fxReduced()){fxBaseHit(rect,c.hp===0);if(c.hp===0)fxDeath(prior);}floatAt(rect,'−'+(prior.hp-c.hp)+' DAMAGE');if(c.hp===0)queueVisual(()=>floatAt(rect,'BASE DESTROYED','destroyed'),330);},delay);
    }
   }
  }

@@ -19,6 +19,8 @@ module.exports=function upgradePage(source){
  html=html.replace("if(action.type!=='draft'&&action.type!=='end')fxAfter(action,fxBefore);",'// Shared-state renderer handles effects for both players.');
  html=html.replace(/if\(action.type==='end'&&fxTurnHands\)fxAutomaticDraw\(fxTurnHands\[me-1\]\);/g,'');
  html=html.replace("if(game.phase==='battle'&&game.turn>1&&fxPendingHands)fxAutomaticDraw(fxPendingHands[me-1]);",'');
+ replace("const fxReduced=()=>!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);","const fxReduced=()=>document.documentElement.dataset.motion==='reduced'||!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);");
+ html=html.replace(".finished.then(()=>el.classList.remove('fx-awaiting'));",".finished.catch(()=>{}).then(()=>el.classList.remove('fx-awaiting'));");
  replace("if(!isLaneTarget(owner,lane,part)){toast('That is not a valid target.');return;}","if(!isLaneTarget(owner,lane,part)){selected=null;render();return;}");
  replace("if(!selected||!projected())return false;","if(!selected||!projected()||projected().phase!=='battle')return false;");
  html=html.replace("defs[u.id].trait==='sniper'","defs[u.id]?.trait==='sniper'");
@@ -50,5 +52,7 @@ module.exports=function upgradePage(source){
  replace(marker,'\n'+fs.readFileSync(path.join(__dirname,'client','upgrade.js'),'utf8').replaceAll('\r\n','\n')+marker);
  html=html.replace('</head>','<link rel="stylesheet" href="/blackwater.css">\n</head>');
  html=html.replace(marker,'\n'+fs.readFileSync(path.join(__dirname,'client','blackwater.js'),'utf8')+marker);
+ html=html.replace('</head>','<link rel="stylesheet" href="/life.css">\n</head>');
+ html=html.replace(marker,'\n'+fs.readFileSync(path.join(__dirname,'client','feedback.js'),'utf8')+'\n'+fs.readFileSync(path.join(__dirname,'client','life.js'),'utf8')+marker);
  return Buffer.from(html);
 };
